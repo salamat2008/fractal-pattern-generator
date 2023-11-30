@@ -350,41 +350,29 @@ class Settingdialog(QDialog):
         self.rest2()
 
     def acept(self):
-        spec = ('+', '[', ']', '(', ')', '\\', '*', '?')
+        spec = set('+-[]()\\*?')
+        for line_edit, default_value in zip(self.lineedit_list, self.mystandart_bind_list):
+            if len(line_edit.text()) < 1:
+                line_edit.setText(default_value)
         for i in range(len(self.lineedit_list)):
-            if len(self.lineedit_list[i].text()) < 1:
-                self.lineedit_list[i].setText(self.mystandart_bind_list[i])
-        for i in range(len(self.lineedit_list)):
-            war = False
-            for j in range(i + 1, len(self.lineedit_list)):
+            for j in range(i+1,len(self.lineedit_list)):
                 if self.lineedit_list[i].text() == self.lineedit_list[j].text() and len(
                         self.lineedit_list[i].text()) > 0:
-                    war = QMessageBox()
-                    war.setWindowTitle('Внимание')
-                    war.setText("Обозначения не могут быть одинаковыми")
-                    war.setIcon(QMessageBox.Critical)
-                    war.exec_()
-                    war = True
-                    break
-            specin = False
-            if not war:
-                for l in range(len(spec)):
-                    o = self.lineedit_list[i].text().replace('\\','\\')
-                    f = o.count(spec[l])
-                    if f > 0:
-                        specin = True
-                        break
-            if (self.lineedit_list[i].text() in spec or specin) and not war:
-                war = QMessageBox()
-                war.setWindowTitle('Внимание')
-                war.setText("В обозначениях можно использовать не все символы")
-                war.setIcon(QMessageBox.Critical)
-                war.exec_()
-                war = True
-            if not war:
-                if len(self.lineedit_list[i].text()) > 0:
-                    self.mybind_list.pop(i)
-                    self.mybind_list.insert(i, self.lineedit_list[i].text())
+                    self.show_warning("Обозначения не могут быть одинаковыми")
+                    return
+            if any(char in spec or char == '\\' for char in self.lineedit_list[i].text()):
+                self.show_warning("В обозначениях можно использовать не все символы")
+                return
+
+            if len(self.lineedit_list[i].text()) > 0:
+                self.mybind_list[i] = self.lineedit_list[i].text()
+
+    def show_warning(self, message):
+        war = QMessageBox()
+        war.setWindowTitle('Внимание')
+        war.setText(message)
+        war.setIcon(QMessageBox.Critical)
+        war.exec_()
 
     def acept2(self):
         f = QFont(self.fontCB_2.font().family(), self.font_sb2.value())

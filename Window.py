@@ -1,9 +1,10 @@
+import json
 import os
 import re
 import sys
 from random import randint
 
-from PyQt5.QtCore import QSize, Qt, QMetaObject
+from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QColor, QCursor, QImage, QPainter
 from PyQt5.QtWidgets import (QFileDialog, QMainWindow,
                              QApplication, QSizePolicy,
@@ -13,13 +14,23 @@ from PyQt5.QtWidgets import (QFileDialog, QMainWindow,
                              QListWidget, QPushButton, QGroupBox, QInputDialog, QColorDialog,
                              QDoubleSpinBox)
 
-from myView import View
+from myView import Mycanvas
 from myhelp import Helpwin
 from settingdial import Settingdialog
 
 
 class Mainwindowqt(QMainWindow):
+
     def __init__(self):
+        """Эта функция определяет класс Mainwindowqt, который создает главное окно приложения.
+            Он наследуется от класса QMainWindow из библиотеки PyQt5.
+            В конструкторе класса определены все элементы интерфейса,
+            такие как меню, виджеты, кнопки, их размещение и настройки.
+            В методе __init__ создается экземпляр класса QApplication и устанавливаются размеры и заголовок главного окна.
+            Затем создаются и настраиваются все необходимые виджеты, такие как холст (MyCanvas), меню, кнопки и т.д.
+            Затем создаются различные методы для настройки виджетов и обработчиков событий,
+            такие как actions_setter, spinboxs, widget_placer, text_setter.
+            В конце, создается экземпляр класса Mainwindowqt и вызывается метод show, чтобы отобразить окно приложения."""
         self.app = QApplication(sys.argv)
         super().__init__()
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -29,7 +40,7 @@ class Mainwindowqt(QMainWindow):
         self.setWindowTitle("Генератор фрактальных узоров")
         self.centralwidget = QWidget(self)
         self.gridLayout = QGridLayout(self.centralwidget)
-        self.canvas = View(self.centralwidget)
+        self.canvas = Mycanvas(self.centralwidget)
         self.gridLayout.addWidget(self.canvas, 0, 0, 1, 2)
         self.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(self)
@@ -108,7 +119,7 @@ class Mainwindowqt(QMainWindow):
             self.linewidthsb, self.depthsb, self.sizesb, self.rsizesb, self.anglesb, self.ranglesb, self.lensb,
             self.patternsb)
         self.actions_setter()
-        self.spinboxs()
+        self.spinboxs_setter()
         self.widget_placer()
         self.text_setter()
         self.comdict = {"F": self.canvas.forward,
@@ -125,7 +136,6 @@ class Mainwindowqt(QMainWindow):
                         "Z": self.canvas.go_to_start
                         }
         self.show()
-        QMetaObject.connectSlotsByName(self)
 
     def actions_setter(self):
         self.file.addAction("Открыть файл", self.open_file)
@@ -133,7 +143,7 @@ class Mainwindowqt(QMainWindow):
         self.file.addAction("Сохранить изображение", self.fsaveimg)
         self.file.addAction("Выход", sys.exit)
         self.settings.addAction("Шрифты и обозначения", self.settings_win)
-        self.settings.addAction("Фон", self.backgr)
+        self.settings.addAction("Фон", self.backgr_setter)
         self.help.addAction("Что делать?", self.helpwi)
         self.help.addSeparator()
         self.help.addAction("Кривая Коха", self.kkoh)
@@ -143,7 +153,8 @@ class Mainwindowqt(QMainWindow):
         self.menubar.addAction(self.settings.menuAction())
         self.menubar.addAction(self.help.menuAction())
 
-    def spinboxs(self):
+    def spinboxs_setter(self):
+        """Настраивает числовые поля."""
         self.linewidthsb.setMinimum(1)
         self.linewidthsb.setMaximum(999999999)
         self.linewidthsb.setProperty("value", 1)
@@ -162,6 +173,7 @@ class Mainwindowqt(QMainWindow):
         self.rsizesb.setSingleStep(1)
 
     def widget_placer(self):
+        """Распологает виджеты и контейнеры."""
         for i in range(len(self.formLayout_2_label_tuple)):
             self.formLayout_2.setWidget(i, QFormLayout.LabelRole, self.formLayout_2_label_tuple[i])
             self.formLayout_2.setWidget(i, QFormLayout.FieldRole, self.formLayout_2_field_tuple[i])
@@ -191,6 +203,7 @@ class Mainwindowqt(QMainWindow):
         self.dockWidget_1.raise_()
 
     def text_setter(self):
+        """Устанавливает текст для виджетов."""
         self.color_list.addItem("#000000")
         self.color_list.item(0).setData(3, QColor.fromRgb(4278190080))
         self.rules_list.addItem("F FLFRRFLF")
@@ -227,78 +240,85 @@ class Mainwindowqt(QMainWindow):
         self.btn_fnc_setter()
 
     def btn_fnc_setter(self):
+        """Устанавливает обработчики событий для различных кнопок и связывает их с соответствующими методами."""
         self.add_Button.clicked.connect(self.add_clr)
         self.edit_Button.clicked.connect(self.edit_clr)
         self.up_Button.clicked.connect(self.up_clr)
-        self.delete_Button.clicked.connect(self.delclr)
-        self.clear_Button.clicked.connect(self.clear_clr)
+        self.delete_Button.clicked.connect(lambda: self.color_list.takeItem(self.color_list.currentRow()))
+        self.clear_Button.clicked.connect(self.color_list.clear)
         self.down_Button.clicked.connect(self.dn_clr)
         self.radd_Button.clicked.connect(self.add_rule)
         self.redit_Button.clicked.connect(self.edit_rule)
         self.rup_Button.clicked.connect(self.up_rule)
-        self.rdelete_Button.clicked.connect(self.del_rule)
-        self.rclear_Button.clicked.connect(self.clear_rule)
+        self.rdelete_Button.clicked.connect(lambda: self.rules_list.takeItem(self.rules_list.currentRow()))
+        self.rclear_Button.clicked.connect(self.rules_list.clear)
         self.rdown_Button.clicked.connect(self.dn_rule)
         self.start_button.clicked.connect(self.start_)
         self.clear_button.clicked.connect(self.canvas.rreset)
 
     def start_(self):
+        """Первоначально из виджетов пользовательского интерфейса(LineEdit, SpinBox)
+        получаются значения атрибутов "pattern", "length", "angle", "random angle", "random length" и "travel length".
+        Затем происходит обработка текста "pattern" с использованием регулярных выражений.
+        Все совпадения шаблонов команд типа "a(n)"(где a - символ команды, n - целое число)
+        заменяются на соответствующую последовательность символов a.
+        Например, "F(3)" будет заменено на "FFF".
+        Далее происходит обработка списка правил.
+        Каждая строка списка разделяется на две части - "отправную" и "конечную" части правила.
+        Для каждой части происходит замена шаблонов команд на последовательности символов(если они есть).
+        Затем происходит последовательное применение всех правил к шаблону.
+        Замена происходит до тех пор, пока в шаблоне остаются шаблоны команд(ключи словаря "rules").
+        Далее происходит обработка каждого символа в полученном шаблоне.
+        Если символ есть в словаре "comdict", то вызывается соответствующая функция, которая отрисовывает линию,
+        поворачивает вектор движения пера или перемещает перо.
+        После каждого шага отрисовки вызывается метод "update()", который принудительно перерисовывает виджет."""
         pattern = self.patternsb.text()
-        lenght = self.sizesb.value()
+        length = self.sizesb.value()
         angle = self.anglesb.value()
-        randang = self.ranglesb.value() * angle / 100
-        randlenght = self.rsizesb.value() * lenght / 100
+        rand_angle = self.ranglesb.value() * angle / 100
+        rand_length = self.rsizesb.value() * length / 100
         travel_length = self.lensb.value()
         pencilling = (
             self.canvas.forward, self.canvas.back, self.canvas.square, self.canvas.circle, self.canvas.triangle)
         turns = (self.canvas.rleft, self.canvas.rright)
         travels = (self.canvas.vforward, self.canvas.vback)
         rules = {}
+        if self.color_list.count() < 1:
+            c = QColorDialog.getColor()
+            self.color_list.insertItem(self.color_list.count(), f'#{hex(c.rgb()).upper()[4:]}')
+            self.color_list.item(self.color_list.count() - 1).setData(3, c)
         self.canvas.set_clr_list(self.color_list)
         self.canvas.rreset()
         self.canvas.pen.setWidth(self.linewidthsb.value())
-        res = []
-        le = []
         for i in self.comdict.keys():
-            res += re.findall(i + r"\(\d+\)", pattern)
-        for i in res:
-            pattern = pattern.replace(f'{i}', f'{i[0] * int(i.replace(")", "")[2:])}')
+            pattern = re.sub(f'{i}\(\d+\)', lambda x: i[0] * int(x.group(0).replace(")", "")[2:]), pattern)
         for j in range(self.rules_list.count()):
             l = self.rules_list.item(j).text().split()
             for i in self.comdict.keys():
-                le += re.findall(i + r"\(\d+\)", l[1])
-            for i in le:
-                l[1] = l[1].replace(f'{i}', f'{i[0] * int(i.replace(")", "")[2:])}')
-            for i in self.comdict.keys():
-                le += re.findall(i + r"\(\d+\)", l[0])
-            for i in le:
-                l[0] = l[0].replace(f'{i}', f'{i[0] * int(i.replace(")", "")[2:])}')
+                l[1] = re.sub(f'{i}\(\d+\)', lambda x: i[0] * int(x.group(0).replace(")", "")[2:]), l[1])
+                l[0] = re.sub(f'{i}\(\d+\)', lambda x: i[0] * int(x.group(0).replace(")", "")[2:]), l[0])
             if len(l) > 1:
                 rules[l[0]] = l[1]
-        for i in range(self.depthsb.value()):
+        for _ in range(self.depthsb.value()):
             for key, value in rules.items():
-                pattern = pattern.replace(f'{key}', f'{value}')
-        for i in range(len(pattern)):
-            if pattern[i] in self.comdict:
-                if self.comdict[pattern[i]] in pencilling:
-                    self.comdict[pattern[i]](lenght + randint(-1, 1) * randlenght)
-                elif self.comdict[pattern[i]] in turns:
-                    self.comdict[pattern[i]](angle + randint(-1, 1) * randang)
-                elif self.comdict[pattern[i]] in travels:
-                    self.comdict[pattern[i]](travel_length)
+                pattern = pattern.replace(key, value)
+        for char in pattern:
+            if char in self.comdict:
+                command = self.comdict[char]
+                if command in pencilling:
+                    command(length + randint(-1, 1) * rand_length)
+                elif command in turns:
+                    command(angle + randint(-1, 1) * rand_angle)
+                elif command in travels:
+                    command(travel_length)
                 else:
-                    self.comdict[pattern[i]]()
+                    command()
+
             self.canvas.update()
             self.update()
 
-    def backgr(self):
+    def backgr_setter(self):
         self.canvas.setBackgroundBrush(QColorDialog().getColor())
-
-    def clear_clr(self):
-        self.color_list.clear()
-
-    def delclr(self):
-        self.color_list.takeItem(self.color_list.currentRow())
 
     def up_clr(self):
         ind = self.color_list.currentRow()
@@ -346,12 +366,6 @@ class Mainwindowqt(QMainWindow):
             self.rules_list.insertItem(ind - 1, item)
             self.rules_list.setCurrentItem(item)
 
-    def del_rule(self):
-        self.rules_list.takeItem(self.rules_list.currentRow())
-
-    def clear_rule(self):
-        self.rules_list.clear()
-
     def dn_rule(self):
         ind = self.rules_list.currentRow()
         if ind < self.rules_list.count():
@@ -359,21 +373,28 @@ class Mainwindowqt(QMainWindow):
             self.rules_list.insertItem(ind + 1, item)
             self.rules_list.setCurrentItem(item)
 
-    def settings_win(self):
+    def settings_win(self) -> None:
+        """"Создается экземпляр класса Settingdialog с передачей
+            текущих шрифтов элементов пользовательского интерфейса в качестве аргументов.
+            Вызывается метод exec_() для открытия окна настроек.
+            Из объекта settings получаются новые шрифты для каждого элемента пользовательского интерфейса
+            и сохраняются в соответствующие переменные.
+            Словарь comdict очищается и заполняется новыми значениями на основе выбранных настроек.
+            Шрифты элементов пользовательского интерфейса обновляются, используя полученные новые шрифты.
+            Возвращаемый тип: отсутствует"""
         settings = Settingdialog(self.sizesb.font(),
                                  self.patternsb.font(),
                                  self.label_linewidthsb.font(),
                                  self.rules_list.font(),
                                  self.color_list.font(),
                                  self.start_button.font())
-        settings.show()
         settings.exec_()
-        sb = settings.fnt_for_sb
-        le = settings.fnt_for_le
-        lb = settings.fnt_for_lb
-        rlw = settings.fnt_fr_rlw
-        clw = settings.fnt_fr_clw
-        btn = settings.fnt_fr_btn
+        font_for_spinboxs = settings.fnt_for_sb
+        font_for_lineedit = settings.fnt_for_le
+        font_for_label = settings.fnt_for_lb
+        font_for_rulelist = settings.fnt_fr_rlw
+        font_for_colorlist = settings.fnt_fr_clw
+        font_for_button = settings.fnt_fr_btn
         self.comdict.clear()
         self.comdict = {settings.mybind_list[0]: self.canvas.forward,
                         settings.mybind_list[1]: self.canvas.back,
@@ -385,34 +406,34 @@ class Mainwindowqt(QMainWindow):
                         settings.mybind_list[7]: self.canvas.square,
                         settings.mybind_list[8]: self.canvas.circle,
                         settings.mybind_list[9]: self.canvas.triangle,
-                        settings.mybind_list[10]:self.canvas.set_start,
-                        settings.mybind_list[11]:self.canvas.go_to_start}
-        self.sizesb.setFont(sb)
-        self.lensb.setFont(sb)
-        self.anglesb.setFont(sb)
-        self.linewidthsb.setFont(sb)
-        self.depthsb.setFont(sb)
-        self.ranglesb.setFont(sb)
-        self.rsizesb.setFont(sb)
-        self.patternsb.setFont(le)
+                        settings.mybind_list[10]: self.canvas.set_start,
+                        settings.mybind_list[11]: self.canvas.go_to_start}
+        self.sizesb.setFont(font_for_spinboxs)
+        self.lensb.setFont(font_for_spinboxs)
+        self.anglesb.setFont(font_for_spinboxs)
+        self.linewidthsb.setFont(font_for_spinboxs)
+        self.depthsb.setFont(font_for_spinboxs)
+        self.ranglesb.setFont(font_for_spinboxs)
+        self.rsizesb.setFont(font_for_spinboxs)
+        self.patternsb.setFont(font_for_lineedit)
         for i in range(len(self.formLayout_2_label_tuple)):
-            self.formLayout_2_label_tuple[i].setFont(lb)
-        self.rules_list.setFont(rlw)
-        self.color_list.setFont(clw)
-        self.clear_button.setFont(btn)
-        self.start_button.setFont(btn)
-        self.up_Button.setFont(btn)
-        self.add_Button.setFont(btn)
-        self.down_Button.setFont(btn)
-        self.edit_Button.setFont(btn)
-        self.rup_Button.setFont(btn)
-        self.rdown_Button.setFont(btn)
-        self.radd_Button.setFont(btn)
-        self.rclear_Button.setFont(btn)
-        self.rdelete_Button.setFont(btn)
-        self.redit_Button.setFont(btn)
-        self.delete_Button.setFont(btn)
-        self.clear_Button.setFont(btn)
+            self.formLayout_2_label_tuple[i].setFont(font_for_label)
+        self.rules_list.setFont(font_for_rulelist)
+        self.color_list.setFont(font_for_colorlist)
+        self.clear_button.setFont(font_for_button)
+        self.start_button.setFont(font_for_button)
+        self.up_Button.setFont(font_for_button)
+        self.add_Button.setFont(font_for_button)
+        self.down_Button.setFont(font_for_button)
+        self.edit_Button.setFont(font_for_button)
+        self.rup_Button.setFont(font_for_button)
+        self.rdown_Button.setFont(font_for_button)
+        self.radd_Button.setFont(font_for_button)
+        self.rclear_Button.setFont(font_for_button)
+        self.rdelete_Button.setFont(font_for_button)
+        self.redit_Button.setFont(font_for_button)
+        self.delete_Button.setFont(font_for_button)
+        self.clear_Button.setFont(font_for_button)
 
     @staticmethod
     def helpwi():
@@ -450,60 +471,69 @@ class Mainwindowqt(QMainWindow):
         self.linewidthsb.setValue(1)
 
     def open_file(self):
+        """Сначала функция открывает диалоговое окно для выбора файла с помощью QFileDialog.getOpenFileName()[0].
+        Затем она проверяет, является ли выбранный файл действительным файлом и имеет расширение .json.
+        Если файл прошел проверку, то функция открывает его с помощью open(filename)
+        и загружает содержимое файла в переменную data с помощью json.load(file).
+        Функция устанавливает значения различных параметров, используя данные из переменной data.
+        Например, значение Pensize устанавливается с помощью self.linewidthsb.setValue(data['Pensize']).
+        Затем функция проверяет наличие ключей Pattern,
+        Rules и Colorlist в переменной data и выполняет соответствующие действия.
+        Например, если есть ключ Pattern, то значение этого ключа устанавливается
+        в поле patternsb с помощью self.patternsb.setText(pattern_value).
+        Для ключей Rules и Colorlist, функция очищает соответствующие списки rules_list и color_list,
+        а затем добавляет элементы из rules_data и color_data в эти списки.
+        В случае ключа Colorlist, функция также создает элементы списка с соответствующими цветами."""
         filename = QFileDialog.getOpenFileName()[0]
-        if os.path.isfile(filename) and filename[-4:] == '.txt':
-            file = open(filename, encoding='cp1251')
-            with file:
-                data = str(file.read()).replace('=', ' ').replace('\n', ' ').split()
-                datalist = ["Pensize", "Depth", "Size", "Angle", "Lenght"]
-                blist = [self.linewidthsb, self.depthsb,
-                         self.sizesb, self.anglesb, self.lensb]
-                for i in range(len(datalist)):
-                    if datalist[i] in data:
-                        blist[i].setValue(int(data[data.index(datalist[i]) + 1:data.index(datalist[i]) + 2][0]))
-                if "Pattern" in data:
-                    self.patternsb.setText(str(data[data.index("Pattern") + 1:data.index("Pattern") + 2][0]))
-                if "Rules" in data:
-                    self.rules_list.clear()
-                    _ruls = data[data.index('Rules') + 1:data.index("Rules_end")]
-                    for i in range(0, len(_ruls), 2):
-                        self.rules_list.addItem(f'{_ruls[i]} {_ruls[i + 1]}')
-                if 'Colorlist' in data:
-                    self.color_list.clear()
-                    _clrlst = data[data.index('Colorlist') + 1:data.index("Colorlist_end")]
-                    for i in range(len(_clrlst)):
-                        if _clrlst[i].isdigit():
-                            self.color_list.insertItem(i, f'#{hex(int(_clrlst[i])).upper()[4:]}')
-                            self.color_list.item(i).setData(3, QColor.fromRgb(int(_clrlst[i])))
+        if os.path.isfile(filename) and filename.endswith('.json'):
+            with open(filename) as file:
+                data = json.load(file)
+            self.linewidthsb.setValue(data['Pensize'])
+            self.depthsb.setValue(data['Depth'])
+            self.sizesb.setValue(data['Size'])
+            self.anglesb.setValue(data['Angle'])
+            self.lensb.setValue(data['Lenght'])
+
+            if 'Pattern' in data:
+                pattern_value = data['Pattern']
+                self.patternsb.setText(pattern_value)
+
+            if 'Rules' in data:
+                self.rules_list.clear()
+                rules_data = data['Rules']
+                for rule in rules_data:
+                    self.rules_list.addItem(rule)
+
+            if 'Colorlist' in data:
+                self.color_list.clear()
+                color_data = data['Colorlist']
+                for item in color_data:
+                    hex_value = hex(int(item)).upper()[4:]
+                    color = QColor.fromRgb(int(item))
+                    self.color_list.addItem(f'#{hex_value}')
+                    self.color_list.item(self.color_list.count() - 1).setData(3, color)
 
     def fsavealg(self):
         filename = QFileDialog.getSaveFileName()[0]
         if len(filename) != 0:
-            if filename[-4:] != '.txt':
-                filename += '.txt'
-            file = open(filename, 'w', encoding='cp1251')
-            c = ''
-            r = ''
-            with file:
-                for i in range(self.color_list.count()):
-                    c += " " + str(self.color_list.item(i).data(3).rgb())
-                for i in range(self.rules_list.count()):
-                    r += " " + self.rules_list.item(i).text()
-                text = (f'Pensize={self.linewidthsb.value()}\n'
-                        f'Depth={self.depthsb.value()}\n'
-                        f'Size={self.sizesb.value()}\n'
-                        f'Angle={self.anglesb.value()}\n'
-                        f'Lenght={self.lensb.value()}\n'
-                        f'Pattern={self.patternsb.text()}\n'
-                        f'Rules={r}\nRules_end\n'
-                        f'Colorlist={c}\nColorlist_end')
-                file.write(text)
+            if filename[-5:] != '.json':
+                filename += '.json'
+        data = {
+            'Pensize': self.linewidthsb.value(),
+            'Depth': self.depthsb.value(),
+            'Size': self.sizesb.value(),
+            'Angle': self.anglesb.value(),
+            'Lenght': self.lensb.value(),
+            'Pattern': self.patternsb.text(),
+            'Rules': [self.rules_list.item(i).text() for i in range(self.rules_list.count())],
+            'Colorlist': [str(self.color_list.item(i).data(3).rgb()) for i in range(self.color_list.count())]
+        }
+        with open(filename, 'w') as file:
+            json.dump(data, file)
 
     def fsaveimg(self):
-        filename = QFileDialog.getSaveFileName()[0]
-        if len(filename) != 0:
-            if filename[-4:] != '.png':
-                filename += '.png'
+        filename, _ = QFileDialog.getSaveFileName(filter="PNG (*.png)")
+        if filename:
             photo = QImage(self.canvas.size(), QImage.Format_ARGB32)
             painter = QPainter(photo)
             self.canvas.render(painter)

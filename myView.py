@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPen, QBrush, QPolygonF
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
 
 
-class View(QGraphicsView):
+class Mycanvas(QGraphicsView):
     def __init__(self, parent):
         super().__init__(parent)
         self.setScene(QGraphicsScene(self))
