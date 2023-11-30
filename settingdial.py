@@ -367,7 +367,8 @@ class Settingdialog(QDialog):
             if len(self.lineedit_list[i].text()) > 0:
                 self.mybind_list[i] = self.lineedit_list[i].text()
 
-    def show_warning(self, message):
+    @staticmethod
+    def show_warning(message):
         war = QMessageBox()
         war.setWindowTitle('Внимание')
         war.setText(message)
