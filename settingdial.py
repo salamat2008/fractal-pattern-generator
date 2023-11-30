@@ -2,22 +2,14 @@ from PyQt5.QtCore import QSize, Qt, QMetaObject
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QDialog, QHBoxLayout, QTabWidget, QVBoxLayout, QPushButton,
                              QFormLayout, QListWidget, QLabel, QFrame, QLineEdit,
-                             QFontComboBox, QSpinBox, QSizePolicy, QWidget)
+                             QFontComboBox, QSpinBox, QSizePolicy, QWidget, QMessageBox)
 
 
 class Settingdialog(QDialog):
     def __init__(self, sb=QFont(), le=QFont(), lb=QFont(), rlw=QFont(), clw=QFont(), btn=QFont()):
         super().__init__()
-        self.forw = "F"
-        self.back = "B"
-        self.left = "L"
-        self.righ = "R"
-        self.vfor = "V"
-        self.vbac = "N"
-        self.colb = "C"
-        self.scvr = "S"
-        self.circ = "E"
-        self.tria = "T"
+        self.mystandart_bind_list = ("F", "B", "L", "R", "V", "N", "C", "S", "E", "T", "X", "Z")
+        self.mybind_list = ["F", "B", "L", "R", "V", "N", "C", "S", "E", "T", "X", "Z"]
         self.fnt_for_sb = sb
         self.fnt_for_le = le
         self.fnt_for_lb = lb
@@ -236,6 +228,18 @@ class Settingdialog(QDialog):
         self.lineEdit_11 = QLineEdit(self.tab_2)
         self.lineEdit_11.setMinimumSize(QSize(140, 25))
         self.formLayout_2.setWidget(9, QFormLayout.FieldRole, self.lineEdit_11)
+        self.label_12 = QLabel(self.tab_2)
+        self.label_12.setMinimumSize(QSize(140, 25))
+        self.formLayout_2.setWidget(10, QFormLayout.LabelRole, self.label_12)
+        self.lineEdit_12 = QLineEdit(self.tab_2)
+        self.lineEdit_12.setMinimumSize(QSize(140, 25))
+        self.formLayout_2.setWidget(10, QFormLayout.FieldRole, self.lineEdit_12)
+        self.label_13 = QLabel(self.tab_2)
+        self.label_13.setMinimumSize(QSize(140, 25))
+        self.formLayout_2.setWidget(11, QFormLayout.LabelRole, self.label_13)
+        self.lineEdit_13 = QLineEdit(self.tab_2)
+        self.lineEdit_13.setMinimumSize(QSize(140, 25))
+        self.formLayout_2.setWidget(11, QFormLayout.FieldRole, self.lineEdit_13)
         self.verticalLayout_3.addLayout(self.formLayout_2)
         self.horizontalLayout_8 = QHBoxLayout()
         self.horizontalLayout_8.setContentsMargins(-1, 5, -1, 5)
@@ -263,6 +267,9 @@ class Settingdialog(QDialog):
         self.listWidget.addItem("Правил\nRules")
         self.listWidget_2.addItem("Список\nList of")
         self.listWidget_2.addItem("Цветов\nColors")
+        self.lineedit_list = (
+            self.lineEdit_2, self.lineEdit_3, self.lineEdit_4, self.lineEdit_5, self.lineEdit_6, self.lineEdit_7,
+            self.lineEdit_8, self.lineEdit_9, self.lineEdit_1, self.lineEdit_11, self.lineEdit_12, self.lineEdit_13)
         self.retranslatei()
         self.tabWidget.setCurrentIndex(0)
         self.listWidget.setCurrentRow(-1)
@@ -295,9 +302,15 @@ class Settingdialog(QDialog):
         self.lineEdit_9.setPlaceholderText("введите ключевой симдол (стандарт \"S\")")
         self.lineEdit_1.setPlaceholderText("введите ключевой символ (стандарт \"E\")")
         self.lineEdit_11.setPlaceholderText("введите ключевой символ (стандарт \"T\")")
+        self.lineEdit_12.setPlaceholderText("введите ключевой симдол (стандарт \"X\")")
+        self.lineEdit_13.setPlaceholderText("введите ключевой символ (стандарт \"Z\")")
+        for i in range(len(self.lineedit_list)):
+            self.lineedit_list[i].setText(self.mystandart_bind_list[i])
         self.label_9.setText("Квадрат")
         self.label_1.setText("Круг")
         self.label_11.setText("Треугольник")
+        self.label_12.setText('Начало')
+        self.label_13.setText('Конец')
         self.pushButton_6.setText("Применить")
         self.pushButton_7.setText("Отмена")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), "Обозначения")
@@ -337,39 +350,46 @@ class Settingdialog(QDialog):
         self.rest2()
 
     def acept(self):
-        if len(self.lineEdit_2.text()) > 0:
-            self.forw = self.lineEdit_2.text()
-        if len(self.lineEdit_3.text()) > 0:
-            self.back = self.lineEdit_3.text()
-        if len(self.lineEdit_4.text()) > 0:
-            self.left = self.lineEdit_4.text()
-        if len(self.lineEdit_5.text()) > 0:
-            self.righ = self.lineEdit_5.text()
-        if len(self.lineEdit_6.text()) > 0:
-            self.vfor = self.lineEdit_6.text()
-        if len(self.lineEdit_7.text()) > 0:
-            self.vbac = self.lineEdit_7.text()
-        if len(self.lineEdit_8.text()) > 0:
-            self.colb = self.lineEdit_8.text()
-        if len(self.lineEdit_9.text()) > 0:
-            self.scvr = self.lineEdit_9.text()
-        if len(self.lineEdit_1.text()) > 0:
-            self.circ = self.lineEdit_1.text()
-        if len(self.lineEdit_11.text()) > 0:
-            self.tria = self.lineEdit_11.text()
+        spec = ('+', '[', ']', '(', ')', '\\', '*', '?')
+        for i in range(len(self.lineedit_list)):
+            if len(self.lineedit_list[i].text()) < 1:
+                self.lineedit_list[i].setText(self.mystandart_bind_list[i])
+        for i in range(len(self.lineedit_list)):
+            war = False
+            for j in range(i + 1, len(self.lineedit_list)):
+                if self.lineedit_list[i].text() == self.lineedit_list[j].text() and len(
+                        self.lineedit_list[i].text()) > 0:
+                    war = QMessageBox()
+                    war.setWindowTitle('Внимание')
+                    war.setText("Обозначения не могут быть одинаковыми")
+                    war.setIcon(QMessageBox.Critical)
+                    war.exec_()
+                    war = True
+                    break
+            specin = False
+            if not war:
+                for l in range(len(spec)):
+                    o = self.lineedit_list[i].text().replace('\\','\\')
+                    f = o.count(spec[l])
+                    if f > 0:
+                        specin = True
+                        break
+            if (self.lineedit_list[i].text() in spec or specin) and not war:
+                war = QMessageBox()
+                war.setWindowTitle('Внимание')
+                war.setText("В обозначениях можно использовать не все символы")
+                war.setIcon(QMessageBox.Critical)
+                war.exec_()
+                war = True
+            if not war:
+                if len(self.lineedit_list[i].text()) > 0:
+                    self.mybind_list.pop(i)
+                    self.mybind_list.insert(i, self.lineedit_list[i].text())
 
     def acept2(self):
         f = QFont(self.fontCB_2.font().family(), self.font_sb2.value())
-        self.lineEdit_2.setFont(f)
-        self.lineEdit_3.setFont(f)
-        self.lineEdit_4.setFont(f)
-        self.lineEdit_5.setFont(f)
-        self.lineEdit_6.setFont(f)
-        self.lineEdit_7.setFont(f)
-        self.lineEdit_8.setFont(f)
-        self.lineEdit_9.setFont(f)
-        self.lineEdit_1.setFont(f)
-        self.lineEdit_11.setFont(f)
+        for i in self.lineedit_list:
+            i.setFont(f)
         self.fnt_for_sb = QFont(self.fontCB_1.font().family(), self.font_sb1.value())
         self.fnt_for_le = QFont(self.fontCB_2.font().family(), self.font_sb2.value())
         self.fnt_for_lb = QFont(self.fontCB_3.font().family(), self.font_sb3.value())
@@ -378,26 +398,11 @@ class Settingdialog(QDialog):
         self.fnt_fr_btn = QFont(self.fontCB_6.font().family(), self.font_sb6.value())
 
     def rest(self):
-        self.lineEdit_2.clear()
-        self.lineEdit_3.clear()
-        self.lineEdit_4.clear()
-        self.lineEdit_5.clear()
-        self.lineEdit_6.clear()
-        self.lineEdit_7.clear()
-        self.lineEdit_8.clear()
-        self.lineEdit_9.clear()
-        self.lineEdit_1.clear()
-        self.lineEdit_11.clear()
-        self.forw = "F"
-        self.back = "B"
-        self.left = "L"
-        self.righ = "R"
-        self.vfor = "V"
-        self.vbac = "N"
-        self.colb = "C"
-        self.scvr = "S"
-        self.circ = "E"
-        self.tria = "T"
+        for i in range(len(self.lineedit_list)):
+            self.lineedit_list[i].setText(self.mystandart_bind_list[i])
+        self.mybind_list.clear()
+        for i in range(len(self.mystandart_bind_list)):
+            self.mybind_list.append(self.mystandart_bind_list[i])
 
     def rest2(self):
         f1 = self.fnt_for_sb

@@ -1,6 +1,6 @@
 from math import radians, cos, sin
 
-from PyQt5.QtCore import QRectF, QPointF
+from PyQt5.QtCore import QRectF, QPointF, Qt
 from PyQt5.QtGui import QPen, QBrush, QPolygonF
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
 
@@ -12,9 +12,10 @@ class View(QGraphicsView):
         self.setSceneRect(QRectF(self.viewport().rect()))
         self.mypoynt1 = QPointF(0, 0)
         self.mypoynt2 = QPointF(0, 0)
+        self.start_point = QPointF(0, 0)
         self.lrotate, self.j = 0, 1
         self.pen = QPen()
-        # self.pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+        self.pen.setCapStyle(Qt.PenCapStyle.RoundCap)
         self.done = True
         self.clr_list = None
 
@@ -22,6 +23,15 @@ class View(QGraphicsView):
         if event.button() == 1 and self.done:
             self.mypoynt1 = self.mapToScene(event.pos())
             self.mypoynt2 = self.mapToScene(event.pos())
+            self.start_point = self.mapToScene(event.pos())
+
+    def set_start(self):
+        self.start_point.setX(self.mypoynt1.x())
+        self.start_point.setY(self.mypoynt1.y())
+
+    def go_to_start(self):
+        self.mypoynt1.setX(self.start_point.x())
+        self.mypoynt1.setY(self.start_point.y())
 
     def vforward(self, lenght):
         x = self.mypoynt1.x() + lenght * cos(radians(self.lrotate))
@@ -54,18 +64,30 @@ class View(QGraphicsView):
         self.lrotate += rotate
 
     def back(self, lenght):
-        x1 = self.mypoynt1.x() - lenght * cos(radians(self.lrotate))
-        y1 = self.mypoynt1.y() + lenght * sin(radians(self.lrotate))
-        self.scene().addLine(self.mypoynt1.x(), self.mypoynt1.y(), x1, y1, self.pen)
-        self.mypoynt1.setX(x1)
-        self.mypoynt1.setY(y1)
+        x1 = self.mypoynt1.x()
+        y1 = self.mypoynt1.y()
+        x2 = x1 - lenght * cos(radians(self.lrotate))
+        y2 = y1 + lenght * sin(radians(self.lrotate))
+        start_in_canv = x1 < (
+                self.width() + 100) / 2 and x1 > -self.width() / 2 and y1 < self.height() / 2 and y1 > -self.height() / 2
+        end_in_canv = x2 < self.width() / 2 and x2 > -self.width() / 2 and y2 < self.height() / 2 and y2 > -self.height() / 2
+        if start_in_canv or end_in_canv:
+            self.scene().addLine(self.mypoynt1.x(), self.mypoynt1.y(), x2, y2, self.pen)
+        self.mypoynt1.setX(x2)
+        self.mypoynt1.setY(y2)
 
     def forward(self, lenght):
-        x1 = self.mypoynt1.x() + lenght * cos(radians(self.lrotate))
-        y1 = self.mypoynt1.y() - lenght * sin(radians(self.lrotate))
-        self.scene().addLine(self.mypoynt1.x(), self.mypoynt1.y(), x1, y1, self.pen)
-        self.mypoynt1.setX(x1)
-        self.mypoynt1.setY(y1)
+        x1 = self.mypoynt1.x()
+        y1 = self.mypoynt1.y()
+        x2 = x1 + lenght * cos(radians(self.lrotate))
+        y2 = y1 - lenght * sin(radians(self.lrotate))
+        start_in_canv = x1 < (
+                self.width() + 100) / 2 and x1 > -self.width() / 2 and y1 < self.height() / 2 and y1 > -self.height() / 2
+        end_in_canv = x2 < self.width() / 2 and x2 > -self.width() / 2 and y2 < self.height() / 2 and y2 > -self.height() / 2
+        if start_in_canv or end_in_canv:
+            self.scene().addLine(self.mypoynt1.x(), self.mypoynt1.y(), x2, y2, self.pen)
+        self.mypoynt1.setX(x2)
+        self.mypoynt1.setY(y2)
 
     def square(self, lenght):
         self.scene().addRect(QRectF(self.mypoynt1.x(), self.mypoynt1.y() - lenght, lenght, lenght), self.pen,

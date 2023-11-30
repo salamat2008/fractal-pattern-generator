@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+from random import randint
 
 from PyQt5.QtCore import QSize, Qt, QMetaObject
 from PyQt5.QtGui import QColor, QCursor, QImage, QPainter
@@ -9,7 +10,8 @@ from PyQt5.QtWidgets import (QFileDialog, QMainWindow,
                              QWidget, QGridLayout, QMenuBar, QMenu,
                              QDockWidget, QVBoxLayout, QHBoxLayout,
                              QFormLayout, QLabel, QSpinBox, QLineEdit,
-                             QListWidget, QPushButton, QGroupBox, QInputDialog, QColorDialog)
+                             QListWidget, QPushButton, QGroupBox, QInputDialog, QColorDialog,
+                             QDoubleSpinBox)
 
 from myView import View
 from myhelp import Helpwin
@@ -24,7 +26,6 @@ class Mainwindowqt(QMainWindow):
         self.resize(1000, 800)
         size_polic = QSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         self.setMinimumSize(QSize(400, 560))
-        self.setMaximumSize(QSize(4000, 3000))
         self.setWindowTitle("Генератор фрактальных узоров")
         self.centralwidget = QWidget(self)
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -40,16 +41,16 @@ class Mainwindowqt(QMainWindow):
         self.dockWidgetContents_2 = QWidget()
         self.verticalLayout = QVBoxLayout(self.dockWidgetContents_2)
         self.formLayout_2 = QFormLayout()
-        self.label = QLabel(self.dockWidgetContents_2)
+        self.label_linewidthsb = QLabel(self.dockWidgetContents_2)
         self.linewidthsb = QSpinBox(self.dockWidgetContents_2)
         self.label_3 = QLabel(self.dockWidgetContents_2)
         self.depthsb = QSpinBox(self.dockWidgetContents_2)
         self.label_4 = QLabel(self.dockWidgetContents_2)
-        self.sizesb = QSpinBox(self.dockWidgetContents_2)
-        self.label_5 = QLabel(self.dockWidgetContents_2)
+        self.sizesb = QDoubleSpinBox(self.dockWidgetContents_2)
+        self.label_anglesb = QLabel(self.dockWidgetContents_2)
         self.anglesb = QSpinBox(self.dockWidgetContents_2)
         self.label_9 = QLabel(self.dockWidgetContents_2)
-        self.lensb = QSpinBox(self.dockWidgetContents_2)
+        self.lensb = QDoubleSpinBox(self.dockWidgetContents_2)
         self.label_8 = QLabel(self.dockWidgetContents_2)
         self.patternsb = QLineEdit(self.dockWidgetContents_2)
         self.groupBox2 = QGroupBox(self.dockWidgetContents_2)
@@ -96,6 +97,16 @@ class Mainwindowqt(QMainWindow):
         self.delete_Button.setSizePolicy(size_policy)
         self.clear_Button.setSizePolicy(size_policy)
         self.canvas.setBackgroundBrush(QColor('white'))
+        self.label_ranglesb = QLabel(self.dockWidgetContents_2)
+        self.label_rsizesb = QLabel(self.dockWidgetContents_2)
+        self.rsizesb = QDoubleSpinBox(self.dockWidgetContents_2)
+        self.ranglesb = QDoubleSpinBox(self.dockWidgetContents_2)
+        self.formLayout_2_label_tuple = (
+            self.label_linewidthsb, self.label_3, self.label_4, self.label_rsizesb, self.label_anglesb,
+            self.label_ranglesb, self.label_9, self.label_8)
+        self.formLayout_2_field_tuple = (
+            self.linewidthsb, self.depthsb, self.sizesb, self.rsizesb, self.anglesb, self.ranglesb, self.lensb,
+            self.patternsb)
         self.actions_setter()
         self.spinboxs()
         self.widget_placer()
@@ -109,7 +120,9 @@ class Mainwindowqt(QMainWindow):
                         "C": self.canvas.change_color,
                         "S": self.canvas.square,
                         "E": self.canvas.circle,
-                        "T": self.canvas.triangle
+                        "T": self.canvas.triangle,
+                        "X": self.canvas.set_start,
+                        "Z": self.canvas.go_to_start
                         }
         self.show()
         QMetaObject.connectSlotsByName(self)
@@ -139,25 +152,19 @@ class Mainwindowqt(QMainWindow):
         self.anglesb.setSingleStep(5)
         self.anglesb.setProperty("value", 60)
         self.lensb.setMaximum(999999999)
-        self.lensb.setSingleStep(10)
-        self.sizesb.setMinimum(1)
+        self.lensb.setSingleStep(5)
         self.sizesb.setMaximum(999999999)
-        self.sizesb.setSingleStep(10)
+        self.sizesb.setSingleStep(5)
         self.sizesb.setProperty("value", 100)
+        self.ranglesb.setMaximum(100)
+        self.ranglesb.setSingleStep(1)
+        self.rsizesb.setMaximum(100)
+        self.rsizesb.setSingleStep(1)
 
     def widget_placer(self):
-        self.formLayout_2.setWidget(0, QFormLayout.LabelRole, self.label)
-        self.formLayout_2.setWidget(0, QFormLayout.FieldRole, self.linewidthsb)
-        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.label_3)
-        self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.depthsb)
-        self.formLayout_2.setWidget(3, QFormLayout.LabelRole, self.label_4)
-        self.formLayout_2.setWidget(3, QFormLayout.FieldRole, self.sizesb)
-        self.formLayout_2.setWidget(4, QFormLayout.LabelRole, self.label_5)
-        self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.anglesb)
-        self.formLayout_2.setWidget(5, QFormLayout.LabelRole, self.label_9)
-        self.formLayout_2.setWidget(5, QFormLayout.FieldRole, self.lensb)
-        self.formLayout_2.setWidget(6, QFormLayout.LabelRole, self.label_8)
-        self.formLayout_2.setWidget(6, QFormLayout.FieldRole, self.patternsb)
+        for i in range(len(self.formLayout_2_label_tuple)):
+            self.formLayout_2.setWidget(i, QFormLayout.LabelRole, self.formLayout_2_label_tuple[i])
+            self.formLayout_2.setWidget(i, QFormLayout.FieldRole, self.formLayout_2_field_tuple[i])
         self.verticalLayout.addLayout(self.formLayout_2)
         self.horizontalLayout1.addWidget(self.rules_list)
         self.verticalLayout__.addWidget(self.radd_Button)
@@ -191,10 +198,12 @@ class Mainwindowqt(QMainWindow):
         self.settings.setTitle("Настройки")
         self.help.setTitle("Помощь")
         self.dockWidget_1.setWindowTitle("Параметры")
-        self.label.setText("Толщина")
+        self.label_linewidthsb.setText("Толщина")
         self.label_3.setText("Глубина")
         self.label_4.setText("Размер")
-        self.label_5.setText("Угол поворота")
+        self.label_rsizesb.setText("Отклонения размера")
+        self.label_anglesb.setText("Угол поворота")
+        self.label_ranglesb.setText("Отклонения угла поворота")
         self.anglesb.setSuffix("°")
         self.label_9.setText("Длинна перемещения")
         self.label_8.setText("Шаблон")
@@ -237,6 +246,8 @@ class Mainwindowqt(QMainWindow):
         pattern = self.patternsb.text()
         lenght = self.sizesb.value()
         angle = self.anglesb.value()
+        randang = self.ranglesb.value() * angle / 100
+        randlenght = self.rsizesb.value() * lenght / 100
         travel_length = self.lensb.value()
         pencilling = (
             self.canvas.forward, self.canvas.back, self.canvas.square, self.canvas.circle, self.canvas.triangle)
@@ -252,7 +263,6 @@ class Mainwindowqt(QMainWindow):
             res += re.findall(i + r"\(\d+\)", pattern)
         for i in res:
             pattern = pattern.replace(f'{i}', f'{i[0] * int(i.replace(")", "")[2:])}')
-        res.clear()
         for j in range(self.rules_list.count()):
             l = self.rules_list.item(j).text().split()
             for i in self.comdict.keys():
@@ -265,23 +275,21 @@ class Mainwindowqt(QMainWindow):
                 l[0] = l[0].replace(f'{i}', f'{i[0] * int(i.replace(")", "")[2:])}')
             if len(l) > 1:
                 rules[l[0]] = l[1]
-        for i in self.comdict.keys():
-            res += re.findall(i + r"\(\d+\)", pattern)
-        for i in res:
-            pattern = pattern.replace(f'{i}', f'{i[0] * int(i.replace(")", "")[2:])}')
         for i in range(self.depthsb.value()):
             for key, value in rules.items():
                 pattern = pattern.replace(f'{key}', f'{value}')
         for i in range(len(pattern)):
             if pattern[i] in self.comdict:
                 if self.comdict[pattern[i]] in pencilling:
-                    self.comdict[pattern[i]](lenght)
+                    self.comdict[pattern[i]](lenght + randint(-1, 1) * randlenght)
                 elif self.comdict[pattern[i]] in turns:
-                    self.comdict[pattern[i]](angle)
+                    self.comdict[pattern[i]](angle + randint(-1, 1) * randang)
                 elif self.comdict[pattern[i]] in travels:
                     self.comdict[pattern[i]](travel_length)
                 else:
                     self.comdict[pattern[i]]()
+            self.canvas.update()
+            self.update()
 
     def backgr(self):
         self.canvas.setBackgroundBrush(QColorDialog().getColor())
@@ -354,7 +362,7 @@ class Mainwindowqt(QMainWindow):
     def settings_win(self):
         settings = Settingdialog(self.sizesb.font(),
                                  self.patternsb.font(),
-                                 self.label.font(),
+                                 self.label_linewidthsb.font(),
                                  self.rules_list.font(),
                                  self.color_list.font(),
                                  self.start_button.font())
@@ -367,28 +375,28 @@ class Mainwindowqt(QMainWindow):
         clw = settings.fnt_fr_clw
         btn = settings.fnt_fr_btn
         self.comdict.clear()
-        self.comdict = {settings.forw: self.canvas.forward,
-                        settings.back: self.canvas.back,
-                        settings.left: self.canvas.rleft,
-                        settings.righ: self.canvas.rright,
-                        settings.vfor: self.canvas.vforward,
-                        settings.vbac: self.canvas.vback,
-                        settings.colb: self.canvas.change_color,
-                        settings.scvr: self.canvas.square,
-                        settings.circ: self.canvas.circle,
-                        settings.tria: self.canvas.triangle}
+        self.comdict = {settings.mybind_list[0]: self.canvas.forward,
+                        settings.mybind_list[1]: self.canvas.back,
+                        settings.mybind_list[2]: self.canvas.rleft,
+                        settings.mybind_list[3]: self.canvas.rright,
+                        settings.mybind_list[4]: self.canvas.vforward,
+                        settings.mybind_list[5]: self.canvas.vback,
+                        settings.mybind_list[6]: self.canvas.change_color,
+                        settings.mybind_list[7]: self.canvas.square,
+                        settings.mybind_list[8]: self.canvas.circle,
+                        settings.mybind_list[9]: self.canvas.triangle,
+                        settings.mybind_list[10]:self.canvas.set_start,
+                        settings.mybind_list[11]:self.canvas.go_to_start}
         self.sizesb.setFont(sb)
         self.lensb.setFont(sb)
         self.anglesb.setFont(sb)
         self.linewidthsb.setFont(sb)
         self.depthsb.setFont(sb)
+        self.ranglesb.setFont(sb)
+        self.rsizesb.setFont(sb)
         self.patternsb.setFont(le)
-        self.label.setFont(lb)
-        self.label_3.setFont(lb)
-        self.label_4.setFont(lb)
-        self.label_5.setFont(lb)
-        self.label_8.setFont(lb)
-        self.label_9.setFont(lb)
+        for i in range(len(self.formLayout_2_label_tuple)):
+            self.formLayout_2_label_tuple[i].setFont(lb)
         self.rules_list.setFont(rlw)
         self.color_list.setFont(clw)
         self.clear_button.setFont(btn)
