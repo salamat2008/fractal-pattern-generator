@@ -118,10 +118,6 @@ class Mainwindowqt(QMainWindow):
         self.formLayout_2_field_tuple = (
             self.linewidthsb, self.depthsb, self.sizesb, self.rsizesb, self.anglesb, self.ranglesb, self.lensb,
             self.patternsb)
-        self.actions_setter()
-        self.spinboxs_setter()
-        self.widget_placer()
-        self.text_setter()
         self.comdict = {"F": self.canvas.forward,
                         "B": self.canvas.back,
                         "L": self.canvas.rleft,
@@ -135,9 +131,15 @@ class Mainwindowqt(QMainWindow):
                         "X": self.canvas.set_start,
                         "Z": self.canvas.go_to_start
                         }
+        self.actions_setter()
+        self.spinboxs_setter()
+        self.widget_placer()
+        self.text_setter()
+        self.btn_fnc_setter()
         self.show()
 
     def actions_setter(self):
+        """Добавляет действия в меню"""
         self.file.addAction("Открыть файл", self.open_file)
         self.file.addAction("Сохранить алгоритм", self.fsavealg)
         self.file.addAction("Сохранить изображение", self.fsaveimg)
@@ -237,7 +239,6 @@ class Mainwindowqt(QMainWindow):
         self.clear_Button.setText("Очистить")
         self.start_button.setText("Старт")
         self.clear_button.setText("Очистить")
-        self.btn_fnc_setter()
 
     def btn_fnc_setter(self):
         """Устанавливает обработчики событий для различных кнопок и связывает их с соответствующими методами."""
@@ -342,6 +343,16 @@ class Mainwindowqt(QMainWindow):
             item.setData(3, clr)
 
     def add_clr(self):
+        """QColorDialog.getColor():
+        Открывает диалог выбора цвета и возвращает выбранный цвет в формате QColor.
+        self.color_list.insertItem(...):
+        Вставляет новый элемент в виджет списка цветов (self.color_list).
+        Формирует текстовую строку для цвета в формате #RRGGBB,
+        где RR, GG, BB - шестнадцатеричные представления красного, зеленого и синего компонентов цвета.
+        Вставляет эту строку в список цветов.
+        self.color_list.item(...).setData(3, c):
+        Получает последний вставленный элемент списка цветов.
+        Устанавливает для данного элемента пользовательские данные с ключом 3 и значением выбранного цвета c(объект QColor)."""
         c = QColorDialog.getColor()
         self.color_list.insertItem(self.color_list.count(), f'#{hex(c.rgb()).upper()[4:]}')
         self.color_list.item(self.color_list.count() - 1).setData(3, c)
