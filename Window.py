@@ -27,16 +27,16 @@ class Mainwindowqt(QMainWindow):
             В конструкторе класса определены все элементы интерфейса,
             такие как меню, виджеты, кнопки, их размещение и настройки.
             В методе __init__ создается экземпляр класса QApplication и устанавливаются размеры и заголовок главного окна.
-            Затем создаются и настраиваются все необходимые виджеты, такие как холст (MyCanvas), меню, кнопки и т.д.
+            Затем создаются и настраиваются все необходимые виджеты, такие как холст (Myсanvas), меню, кнопки и т.д.
             Затем создаются различные методы для настройки виджетов и обработчиков событий,
-            такие как actions_setter, spinboxs, widget_placer, text_setter.
+            такие как actions_setter, spinboxs, widget_placer, text_setter, btn_fnc_setter.
             В конце, создается экземпляр класса Mainwindowqt и вызывается метод show, чтобы отобразить окно приложения."""
         self.app = QApplication(sys.argv)
         super().__init__()
         size_policy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.resize(1000, 800)
         size_polic = QSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-        self.setMinimumSize(QSize(400, 560))
+        self.setMinimumSize(400, 700)
         self.setWindowTitle("Генератор фрактальных узоров")
         self.centralwidget = QWidget(self)
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -145,7 +145,7 @@ class Mainwindowqt(QMainWindow):
         self.file.addAction("Сохранить изображение", self.fsaveimg)
         self.file.addAction("Выход", sys.exit)
         self.settings.addAction("Шрифты и обозначения", self.settings_win)
-        self.settings.addAction("Фон", self.backgr_setter)
+        self.settings.addAction("Фон", lambda: self.canvas.setBackgroundBrush(QColorDialog().getColor()))
         self.help.addAction("Что делать?", self.helpwi)
         self.help.addSeparator()
         self.help.addAction("Кривая Коха", self.kkoh)
@@ -318,9 +318,6 @@ class Mainwindowqt(QMainWindow):
             self.canvas.update()
             self.update()
 
-    def backgr_setter(self):
-        self.canvas.setBackgroundBrush(QColorDialog().getColor())
-
     def up_clr(self):
         ind = self.color_list.currentRow()
         if ind > 0:
@@ -336,6 +333,7 @@ class Mainwindowqt(QMainWindow):
             self.color_list.setCurrentItem(item)
 
     def edit_clr(self):
+        """"""
         item = self.color_list.item(self.color_list.currentRow())
         if item is not None:
             clr = QColorDialog().getColor()
