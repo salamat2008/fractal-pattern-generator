@@ -1,5 +1,10 @@
-from Window import Mainwindowqt
+from Window import MainWindow
+import sys
 
 if __name__ == '__main__':
-    ui = Mainwindowqt()
-    ui.app.exec_()
+    try:
+        ui = MainWindow()
+        sys.exit(ui.exec())
+    except Exception as e:
+        print(e)
+        raise e
