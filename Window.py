@@ -203,14 +203,13 @@ class MainWindow(QMainWindow):
                                 field.setText(data[key])
                             elif isinstance(field, QLineEdit):
                                 self.rules_list.clear()
-                                for rule in data['Rules']:
-                                    self.rules_list.addtext(rule)
-
-                        if 'Colorlist' in data:
-                            self.colorlist.clear()
-                            for item in data['Colorlist']:
-                                color = QColor(int(item))
-                                self.colorlist.addcolor(color)
+                        for rule in data['Rules']:
+                            self.rules_list.addtext(rule)
+                        
+                        self.colorlist.clear()
+                        for item in data['Colorlist']:
+                            color = QColor(int(item))
+                            self.colorlist.addcolor(color)
 
             except Exception as e:
                 self.show_warning('Файл поврежден')
@@ -220,7 +219,7 @@ class MainWindow(QMainWindow):
 
     def save_algorithm(self):
         """
-
+        dont work now
         :return: None
         """
         filename, _ = QFileDialog.getSaveFileName(filter = "JSON (*.json)")
