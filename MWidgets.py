@@ -1,6 +1,6 @@
 from math import cos, radians, sin
 from random import gauss, triangular
-from typing import Callable, Optional, override
+from typing import Callable, Optional
 
 from PySide6.QtCore import QPoint, QPointF, Qt
 from PySide6.QtGui import QColor, QIcon, QPainter, QPen, QPixmap, QRgba64
@@ -28,8 +28,7 @@ class MButton(QPushButton):
         self.function = func
         if isinstance(sizepolicy, QSizePolicy):
             self.setSizePolicy(sizepolicy)
-
-    @override
+
     def mouseReleaseEvent(self, e):
         super().mouseReleaseEvent(e)
         if e.button() == Qt.MouseButton.LeftButton and callable(self.function):
@@ -79,8 +78,7 @@ class Modifiedlist(QListWidget):
 
     def show_menu(self, position: QPoint):
         self.menu.exec(self.mapToGlobal(position))
-
-    @override
+
     def addItem(self, aitem: QListWidgetItem | str):
         super().addItem(aitem)
         self.setCurrentRow(self.count() - 1)
@@ -115,8 +113,7 @@ class Modifiedlist(QListWidget):
 class MTextlistwidget(Modifiedlist):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
-
-    @override
+
     def addItem(self, *args: QListWidgetItem | str):
         """
         If no arguments are passed, the self.addtext method is called
@@ -150,8 +147,7 @@ class MTextlistwidget(Modifiedlist):
             raise TypeError("The argument must be a string")
         if len(text) > 0 and accepted:
             self.addItem(text)
-
-    @override
+
     def editcurrentitem(self):
         """
         Only works with the current item, if it is not None,
@@ -177,8 +173,7 @@ class MColorlistwidget(Modifiedlist):
         super().__init__(parent)
         self.icon = QPixmap(30, 30)
         self.icon.fill(QColor(0, 0, 0, 0))
-
-    @override
+
     def editcurrentitem(self):
         """
         Only works with the current item, if it is not None,
@@ -194,8 +189,7 @@ class MColorlistwidget(Modifiedlist):
                 item.setIcon(QIcon(self.drawiconforitem(color)))
                 item.setText(f'#{hex(color.rgb()).upper()[4:]}')
                 item.setData(self.ColorRole, color)
-
-    @override
+
     def addItem(self, *args: QListWidgetItem | QColor | str):
         if len(args) == 0:
             self.addcolor()
@@ -305,8 +299,7 @@ class Settingdialog(MDialog):
         war.setText(message)
         war.setIcon(QMessageBox.Icon.Critical)
         war.exec()
-
-    @override
+
     def accept(self):
         spec = set('()123456789\\')
         for lineedit, default_value in zip(self.lineedit_list, self.standart_binds):
