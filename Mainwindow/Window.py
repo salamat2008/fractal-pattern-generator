@@ -10,9 +10,9 @@ from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (QApplication, QDockWidget, QDoubleSpinBox, QFileDialog, QFormLayout, QGroupBox,
                                QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMenu, QMenuBar, QMessageBox,
                                QSizePolicy, QSpinBox, QVBoxLayout, QWidget)
+from what import Widget
 
 from MWidgets import MButton, MColorlistwidget, MHelpwin, MTextlistwidget
-from what import Widget
 
 
 class MainWindow(QMainWindow):
