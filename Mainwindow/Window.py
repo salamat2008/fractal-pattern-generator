@@ -1,6 +1,3 @@
-"""
-print(f'Этот кодер просто {input()}')
-"""
 import json
 import os
 import sys
