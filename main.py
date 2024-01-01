@@ -1,6 +1,6 @@
 import sys
 
-from Window import MainWindow
+from Mainwindow.Window import MainWindow
 
 if __name__ == '__main__':
     try:

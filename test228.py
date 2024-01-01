@@ -8,7 +8,7 @@ from PySide6.QtWebEngineCore import QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QDoubleSpinBox, QWidget
 
-from Lsystem import Coincidences, LSystem
+from Lsystems.Lsystem import Coincidences, LSystem
 
 
 class MTurtle:

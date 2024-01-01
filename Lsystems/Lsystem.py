@@ -98,7 +98,7 @@ class LSystem:
         def toCoincidences(obj: Iterable):
             return Coincidences(*obj)
 
-        with sqconnect("Lsystemouts.db") as connection:
+        with sqconnect("../Lsystemouts.db") as connection:
             cursor = connection.cursor()
             cursor.executescript("""
             CREATE TABLE IF NOT EXISTS rules (
@@ -172,7 +172,7 @@ class LSystem:
 
     @staticmethod
     def cleardatabase():
-        with sqconnect("Lsystemouts.db") as connection:
+        with sqconnect("../Lsystemouts.db") as connection:
             cursor = connection.cursor()
             cursor.executescript(
                     """

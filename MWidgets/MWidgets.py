@@ -25,7 +25,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from Lsystem import LSystem
+from Lsystems.Lsystem import LSystem
 
 
 class MButton(QPushButton):
