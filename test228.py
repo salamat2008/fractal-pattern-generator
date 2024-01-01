@@ -8,7 +8,8 @@ from PySide6.QtWebEngineCore import QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QDoubleSpinBox, QWidget
 
-from Lsysems.Lsystem import *
+from Lsystems.Lsystem import Coincidences, LSystem
+
 
 class MTurtle:
     line_lenght: int | float = 10
@@ -62,11 +63,11 @@ class MTurtle:
     def maxsize(self, line_lenght: int | float):
         if len(self.lines_array) > 0:
             maxwidth = abs(np.max(self.lines_array[:, :, 0])) + abs(
-                np.min(self.lines_array[:, :, 0])
+                    np.min(self.lines_array[:, :, 0])
             )
             maxwidth *= abs(line_lenght) / self.line_lenght
             maxheith = abs(np.max(self.lines_array[:, :, 1])) + abs(
-                np.min(self.lines_array[:, :, 1])
+                    np.min(self.lines_array[:, :, 1])
             )
             maxheith *= abs(line_lenght) / self.line_lenght
             return round(maxwidth + 3), round(maxheith + 4)
@@ -80,7 +81,7 @@ class MTurtle:
         line: np.array = np.array(line.toTuple())
         line.shape = (1, 2, 2)
         line = np.round(line, 4)
-        self.lines_array = np.append(self.lines_array, line, axis=0)
+        self.lines_array = np.append(self.lines_array, line, axis = 0)
 
     def backward(self, quantity: int | float):
         line = QLineF(self.position, QPointF(100, 0))
@@ -90,7 +91,7 @@ class MTurtle:
         line: np.array = np.array(line.toTuple())
         line.shape = (1, 2, 2)
         line = np.round(line, 4)
-        self.lines_array = np.append(self.lines_array, line, axis=0)
+        self.lines_array = np.append(self.lines_array, line, axis = 0)
 
     def right(self, quantity: int | float):
         self.rotation -= self.rotate_angle * quantity
@@ -133,22 +134,22 @@ class Widget(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.lsys = LSystem(
-            {"F": "FLFRRFLF"},
-            (
-                ("F", "forward"),
-                ("B", "back"),
-                ("L", "left"),
-                ("R", "right"),
-                ("Mf", "mforward"),
-                ("Mb", "mback"),
-                ("T", 'triangle'),
-                ("S", 'square'),
-                ("E", 'circle'),
-                ("C", 'change')
-            ),
+                {"F": "FLFRRFLF"},
+                (
+                    ("F", "forward"),
+                    ("B", "back"),
+                    ("L", "left"),
+                    ("R", "right"),
+                    ("Mf", "mforward"),
+                    ("Mb", "mback"),
+                    ("T", 'triangle'),
+                    ("S", 'square'),
+                    ("E", 'circle'),
+                    ("C", 'change')
+                ),
         )
         self.tut = MTurtle(
-            self.lsys.keywords, [QColor("black"), QColor("pink"), QColor("blue")]
+                self.lsys.keywords, [QColor("black"), QColor("pink"), QColor("blue")]
         )
         self.line_lenght: QDoubleSpinBox = QDoubleSpinBox(self)
         self.tut.rotate_angle = 60
@@ -174,8 +175,8 @@ class Widget(QWidget):
             pen1.setWidth(1)
             painter.setPen(pen1)
             pos = QPointF(
-                self.pixmap.rect().bottomLeft().x() + painter.pen().width(),
-                self.pixmap.rect().bottomLeft().y() - painter.pen().width(),
+                    self.pixmap.rect().bottomLeft().x() + painter.pen().width(),
+                    self.pixmap.rect().bottomLeft().y() - painter.pen().width(),
             )
             for line in self.tut.getlines(self.line_lenght.value(), pos):
                 painter.drawLine(line)
@@ -188,7 +189,7 @@ class Widget(QWidget):
 
         pen1 = painter.pen()
         pen1.setWidth(3)
-        pen1.setColor(QColor(0,0,0,0))
+        pen1.setColor(QColor(0, 0, 0, 0))
         painter.setPen(pen1)
         painter.setBrush(gradi)
         painter.drawPixmap(self.pixmappos, self.pixmap)
@@ -228,7 +229,7 @@ if __name__ == "__main__":
     window = QWidget()
     page = QWebEnginePage()
     page.setUrl('https://www.youtube.com')
-    Web = QWebEngineView(page,window)
+    Web = QWebEngineView(page, window)
     Web.show()
     window.show()
     app.exec()
