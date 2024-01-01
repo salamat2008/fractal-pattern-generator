@@ -8,6 +8,7 @@ from PySide6.QtWebEngineCore import QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QDoubleSpinBox, QWidget
 
+from Lsysems.Lsystem import *
 
 class MTurtle:
     line_lenght: int | float = 10
