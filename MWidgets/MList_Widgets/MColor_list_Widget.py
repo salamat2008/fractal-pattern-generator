@@ -1,7 +1,7 @@
 from PySide6.QtGui import QColor, QIcon, QPainter, QPen, QPixmap, QRgba64, Qt
 from PySide6.QtWidgets import QColorDialog
 
-from .MWidgets import Modified_list, QListWidgetItem, QWidget
+from .Modified_list_widget import Modified_list_widget, QListWidgetItem, QWidget
 
 
 class MColorDialog(QColorDialog):
@@ -17,7 +17,7 @@ class MColorDialog(QColorDialog):
         return self.selectedColor(), result
 
 
-class MColor_list_widget(Modified_list):
+class MColor_list_widgetWidget(Modified_list_widget):
     ColorRole = Qt.ItemDataRole.UserRole + 1
     
     def __init__(self, parent: QWidget | None = None):
@@ -94,7 +94,7 @@ class MColor_list_widget(Modified_list):
     
     def getitems(self) -> list[QListWidgetItem]:
         """
-        The color is stored in the MColor_list_widget.ColorRole
+        The color is stored in the MColor_list_widgetWidget.ColorRole
         following Qt.ItemDataRole.UserRole as a QColor object
         :return: list[QListWidgetItem]
         """
