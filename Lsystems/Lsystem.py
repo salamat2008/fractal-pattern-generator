@@ -100,7 +100,7 @@ class LSystem:
         def toCoincidences(obj: Iterable):
             return Coincidences(*obj)
         
-        with sql_connect("../Lsystemouts.db") as connection:
+        with sql_connect("../Lsystem_outs.db") as connection:
             cursor = connection.cursor()
             cursor.executescript(
                     """
@@ -123,7 +123,7 @@ class LSystem:
                                     conclusion TEXT NOT NULL,
                                     PRIMARY KEY("conclusion_id" AUTOINCREMENT)
                                     );
-                                CREATE TABLE IF NOT EXISTS kkeywords (
+                                CREATE TABLE IF NOT EXISTS keywords (
                                     Keywords_array_id INTEGER NOT NULL UNIQUE,
                                     Keywords_array TEXT UNIQUE,
                                     PRIMARY KEY("Keywords_array_id" AUTOINCREMENT)
@@ -135,7 +135,7 @@ class LSystem:
             axiom = self.multiplication(axiom)
             n_iter: int
             temp = (insert_in_to_tables("rules", "rule", rules),
-                    insert_in_to_tables("kkeywords", "Keywords_array", Keywords),
+                    insert_in_to_tables("keywords", "Keywords_array", Keywords),
                     insert_in_to_tables("axioms", "axiom", axiom))
             cursor.execute(
                     """
@@ -145,9 +145,9 @@ class LSystem:
                                 conclusions.axiom_id,
                                 n_iter
                                 FROM conclusions
-                                JOIN rules, kkeywords, axioms
+                                JOIN rules, keywords, axioms
                                 ON conclusions.rule_id = rules.rule_id AND
-                                conclusions.Keywords_array_id = kkeywords.Keywords_array_id AND
+                                conclusions.Keywords_array_id = keywords.Keywords_array_id AND
                                 conclusions.axiom_id = axioms.axiom_id
                                 WHERE rule = ? AND
                                 Keywords_array = ? AND
@@ -179,15 +179,15 @@ class LSystem:
             return action_string
     
     @staticmethod
-    def cleardatabase():
-        with sql_connect("../Lsystemouts.db") as connection:
+    def clear_database():
+        with sql_connect("../Lsystem_outs.db") as connection:
             cursor = connection.cursor()
             cursor.executescript(
                     """
                     DROP TABLE IF EXISTS rules;
                     DROP TABLE IF EXISTS axioms;
                     DROP TABLE IF EXISTS conclusions;
-                    DROP TABLE IF EXISTS kkeywords;
+                    DROP TABLE IF EXISTS keywords;
                     """
             )
     
@@ -201,10 +201,15 @@ class LSystem:
             for keyword in keywords:
                 string = string.replace(keyword, keywords[0])
             string = sub(
-                    f"(?<! )({escape(keywords[0])})+",
+                    f"(?<! )(?P<keyword>{escape(keywords[0])})+",
                     lambda match: f" {match.group(1)}({len(match.group(0)) // len(keywords[0])})", string
             )
-        return tuple(Coincidences(match.group(1), int(match.group(2))) for match in finditer(r"(\S+)\((\d+)\)", string))
+        result = (Coincidences(match.group(1), int(match.group(2))) for match in
+                  finditer(
+                          r"(?P<keyword>\S+)\((?P<quantity>\d+)\)",
+                          string
+                  ))
+        return tuple(result)
     
     def multiplication(self, argument: str) -> str:
         """
@@ -212,13 +217,18 @@ class LSystem:
         :returns: str
         """
         
-        def repl(match):
-            return match.group(1) * int(match.group(2))
-        
         for keywords in self.keywords:
             for keyword in keywords:
-                argument = sub(f"({escape(keyword)})" + r"\((\d+)\)", repl, argument)
-        argument = sub(r"(.)\((\d+)\)", repl, argument)
+                argument = sub(
+                        f"(?P<keyword>{escape(keyword)})" + r"\((?P<quantity>\d+)\)",
+                        lambda match: match.group(1) * int(match.group(2)),
+                        argument
+                )
+        argument = sub(
+                r"(?P<keyword>.)\((?P<quantity>\d+)\)",
+                lambda match: match.group(1) * int(match.group(2)),
+                argument
+        )
         return argument
     
     def __repr__(self):
@@ -229,7 +239,8 @@ class LSystem:
 
 
 if __name__ == "__main__":
-    lsus = LSystem(
+    # noinspection SpellCheckingInspection
+    lsystem = LSystem(
             {"F": "FLFRRFLF"},
             (
                 ("F", "forward"),
@@ -244,4 +255,4 @@ if __name__ == "__main__":
                 ("C", 'change')
             )
     )
-    print(lsus.generate_action_string('F', 1))
+    print(lsystem.generate_action_string('F', 1))
