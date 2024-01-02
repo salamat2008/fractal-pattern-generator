@@ -1,0 +1,163 @@
+import time
+from re import escape, finditer, sub
+from typing import Iterable, NamedTuple
+
+
+class Coincidences(NamedTuple):
+    character: str
+    quantity: int
+
+
+class LSystem:
+    _rules: dict[str, str] = {}
+    _keywords: list[list[str]] = ()
+    
+    def __init__(
+            self,
+            arg1: Iterable[str] | dict[str, str] | str | "LSystem" | None = None,
+            arg2: Iterable[str] | Iterable[Iterable[str]] | None = None,
+    ) -> None:
+        """
+        LSystem(self, arg1: Iterable[str] | dict[str, str] | str,
+        arg2: Iterable[str] | Iterable[Iterable[str]])
+
+        LSystem(self, arg1: LSystem2d)
+        :raises TypeError:
+        :parameter arg1: Iterable[str] | dict[str, str] | str | "LSystem" | None
+        :parameter arg2: Iterable[str] | Iterable[Iterable[str]] | None
+        """
+        if isinstance(arg1, LSystem):
+            print(type(arg1))
+            self.keywords = arg1.keywords.copy()
+            self.rules = arg1.rules.copy()
+        elif (arg2 is not None) and (arg1 is not None):
+            self.keywords = arg2
+            self.rules = arg1
+    
+    @property
+    def rules(self) -> dict[str, str]:
+        return self._rules
+    
+    @rules.setter
+    def rules(self, rules: Iterable[str] | dict[str, str] | str) -> None:
+        if isinstance(rules, dict):
+            self._rules = rules.copy()
+        elif isinstance(rules, str):
+            self._rules.clear()
+            rules: list = self.multiplication(rules).split(maxsplit = 1)
+            if len(rules) == 2:
+                self._rules[rules[0]] = rules[1]
+        elif isinstance(rules, Iterable):
+            self._rules.clear()
+            rules: Iterable
+            for rule in rules:
+                rule = self.multiplication(rule).split(maxsplit = 1)
+                if len(rule) == 2:
+                    self._rules[rule[0]] = rule[1]
+        else:
+            raise TypeError
+    
+    @property
+    def keywords(self) -> list[list[str]]:
+        return self._keywords
+    
+    @keywords.setter
+    def keywords(self, keywords: Iterable[str] | Iterable[Iterable[str]]) -> None:
+        if not isinstance(keywords, Iterable):
+            raise TypeError(
+                    "The argument must be a Iterable[Iterable[str]] or Iterable[str]"
+            )
+        temp1 = []
+        for keyword in keywords:
+            if isinstance(keyword, str):
+                temp1.append([keyword])
+            elif isinstance(keyword, Iterable):
+                temp1.append(sorted(keyword))
+            else:
+                raise TypeError(
+                        "The argument must be a Iterable[Iterable[str]] or Iterable[str]"
+                )
+        self._keywords = temp1
+    
+    def generate_action_string(
+            self, string: str, number_of_iterations: int
+    ) -> tuple[Coincidences, ...]:
+        """
+        :param string: str or Iterable[tuple[str, int]]
+        :param number_of_iterations: int
+        :return: tuple[Coincidences, ...]
+        """
+        for _ in range(number_of_iterations):
+            for _key_, _value_ in self.rules.items():
+                string = string.replace(_key_, _value_)
+        
+        action_string = self.formatting(string)
+        return action_string
+    
+    def formatting(self, string: str) -> tuple[Coincidences, ...]:
+        """
+        :param string: str
+        :return: tuple[tuple[str, int], ...]
+        """
+        
+        for keywords in self.keywords:
+            for keyword in keywords:
+                string = string.replace(keyword, keywords[0])
+            string = sub(
+                    f"(?<! )(?P<keyword>{escape(keywords[0])})+",
+                    lambda match: f" {match.group(1)}({len(match.group(0)) // len(keywords[0])})", string
+            )
+        result = (Coincidences(match.group(1), int(match.group(2))) for match in
+                  finditer(
+                          r"(?P<keyword>\S+)\((?P<quantity>\d+)\)",
+                          string
+                  ))
+        return tuple(result)
+    
+    def multiplication(self, argument: str) -> str:
+        """
+        :parameter argument: str
+        :returns: str
+        """
+        
+        for keywords in self.keywords:
+            for keyword in keywords:
+                argument = sub(
+                        f"(?P<keyword>{escape(keyword)})" + r"\((?P<quantity>\d+)\)",
+                        lambda match: match.group(1) * int(match.group(2)),
+                        argument
+                )
+        argument = sub(
+                r"(?P<keyword>.)\((?P<quantity>\d+)\)",
+                lambda match: match.group(1) * int(match.group(2)),
+                argument
+        )
+        return argument
+    
+    def __repr__(self):
+        return f"{self.__class__.__name__}{self.rules, self.keywords}"
+    
+    def __str__(self):
+        return f"{self.__class__.__name__}{self.rules, self.keywords}"
+
+
+if __name__ == "__main__":
+    start_time = time.monotonic()
+    # noinspection SpellCheckingInspection
+    lsystem = LSystem(
+            {"F": "FLFRRFLF"},
+            (
+                ("F", "forward"),
+                ("B", "back"),
+                ("L", "left"),
+                ("R", "right"),
+                ("Mf", "mforward"),
+                ("Mb", "mback"),
+                ("T", 'triangle'),
+                ("S", 'square'),
+                ("E", 'circle'),
+                ("C", 'change')
+            )
+    )
+    some = [lsystem.generate_action_string('F', i) for i in range(11)]
+    print(time.monotonic() - start_time)
