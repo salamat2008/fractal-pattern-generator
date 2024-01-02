@@ -6,7 +6,7 @@ from PySide6.QtCore import QLineF, QPoint, QPointF
 from PySide6.QtGui import QColor, QGradient, QPainter, QPixmap, Qt
 from PySide6.QtWidgets import QApplication, QDoubleSpinBox, QWidget
 
-from Lsystems.Lsystem import Coincidences, LSystem
+from Lsystems.Lsystem import LSystem
 
 
 class MTurtle:
@@ -50,7 +50,7 @@ class MTurtle:
         lines.resize(lines.size // 4, 4)
         return [QLineF(*line) for line in lines]
     
-    def drawfracture(self, patern: tuple[Coincidences, ...]):
+    def drawfracture(self, patern: tuple[tuple[str, int], ...]):
         self.lines_array: np.array = np.array([])
         self.lines_array.resize(self.lines_array.size // 2, 2, 2)
         for command, quantity in patern:

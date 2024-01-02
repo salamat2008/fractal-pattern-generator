@@ -3,12 +3,7 @@ import time
 from json import dumps
 from re import escape, finditer, sub
 from sqlite3 import connect as sql_connect
-from typing import Generator, Iterable, NamedTuple
-
-
-class Coincidences(NamedTuple):
-    character: str
-    quantity: int
+from typing import Generator, Iterable
 
 
 class LSystem:
@@ -84,7 +79,7 @@ class LSystem:
     
     def generate_action_string(
             self, string: str, number_of_iterations: int, my_memory_endless: bool = False
-    ) -> Generator[tuple[str, int]]:
+    ) -> tuple[tuple[str, int]]:
         """
         :param my_memory_endless: bool
         :param string: str or Iterable[tuple[str, int]]
@@ -164,7 +159,7 @@ class LSystem:
                 for _ in range(number_of_iterations):
                     for _key_, _value_ in self.rules.items():
                         string = string.replace(_key_, _value_)
-                action_string = self.formatting(string)
+                action_string = tuple(self.formatting(string))
                 cursor.execute(
                         """
                             INSERT INTO conclusions (rule_id, Keywords_array_id, axiom_id, n_iter, conclusion)
@@ -256,7 +251,7 @@ if __name__ == "__main__":
                 ("C", 'change')
             )
     )
-    for i in range(15):
-        for j in range(10):
-            lsystem.generate_action_string('F', j, True)
+    for _ in range(8):
+        for jindex in range(12):
+            lsystem.generate_action_string('F', jindex, True)
     print(time.monotonic() - start_time)

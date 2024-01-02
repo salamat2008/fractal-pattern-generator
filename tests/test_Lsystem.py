@@ -1,6 +1,6 @@
 import unittest
 
-from Lsystems.Lsystem import Coincidences, LSystem
+from Lsystems.Lsystem import LSystem
 
 
 # noinspection PyTypeChecker
@@ -46,14 +46,15 @@ class TestLSystem(unittest.TestCase):
         result = lsystem.generate_action_string('F', 1)
         self.assertEqual(
                 result,
-                (Coincidences(character = 'F', quantity = 1),
-                 Coincidences(character = 'F', quantity = 1),
-                 Coincidences(character = 'F', quantity = 1),
-                 Coincidences(character = 'F', quantity = 1))
+                (
+                    ('F', 1),
+                    ('F', 1),
+                    ('F', 1),
+                    ('F', 1))
         )
         
         # Negative test case: generating action string with invalid number of iterations
-        lsystem = LSystem({"F": "FLFRRFLF"}, [("F", "forward"), ("B", "back")])
+        lsystem = LSystem({"F": "FLFRRFLF"}, (("F", "forward"), ("B", "back")))
         with self.assertRaises(OverflowError):
             lsystem.generate_action_string('F', 1000000)
     
@@ -64,13 +65,13 @@ class TestLSystem(unittest.TestCase):
         # Positive test case: formatting string with keywords
         result = lsystem.formatting("FFBLLRF")
         self.assertEqual(
-                result,
+                tuple(result),
                 (
-                    Coincidences("F", 2),
-                    Coincidences("B", 1),
-                    Coincidences("L", 2),
-                    Coincidences("R", 1),
-                    Coincidences("F", 1))
+                    ("F", 2),
+                    ("B", 1),
+                    ("L", 2),
+                    ("R", 1),
+                    ("F", 1))
         )
         
         # Negative test case: formatting string with invalid input
