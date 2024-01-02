@@ -1,5 +1,6 @@
+import pickle
 import time
-from json import dumps, loads
+from json import dumps
 from re import escape, finditer, sub
 from sqlite3 import connect as sql_connect
 from typing import Iterable, NamedTuple
@@ -83,7 +84,7 @@ class LSystem:
     
     def generate_action_string(
             self, string: str, number_of_iterations: int, my_memory_endless: bool = False
-    ) -> tuple[Coincidences, ...]:
+    ) -> list[list]:
         """
         :param my_memory_endless: bool
         :param string: str or Iterable[tuple[str, int]]
@@ -118,7 +119,7 @@ class LSystem:
                                     Keywords_array_id INTEGER NOT NULL,
                                     axiom_id INTEGER NOT NULL,
                                     n_iter INTEGER NOT NULL DEFAULT 1,
-                                    conclusion TEXT NOT NULL,
+                                    conclusion BLOB NOT NULL,
                                     PRIMARY KEY("conclusion_id" AUTOINCREMENT)
                                     );
                                 CREATE TABLE IF NOT EXISTS keywords (
@@ -169,11 +170,11 @@ class LSystem:
                             INSERT INTO conclusions (rule_id, Keywords_array_id, axiom_id, n_iter, conclusion)
                             VALUES (?, ?, ?, ?, ?)
                             """,
-                        (*temp, number_of_iterations, dumps(action_string))
+                        (*temp, number_of_iterations, pickle.dumps(action_string))
                 )
             else:
                 cursor.execute('SELECT conclusion FROM conclusions WHERE conclusion_id = ?', [result[0]])
-                action_string = tuple(Coincidences(*coincidence) for coincidence in loads(cursor.fetchone()[0]))
+                action_string = pickle.loads(cursor.fetchone()[0])
             return action_string
     
     @staticmethod
@@ -189,7 +190,7 @@ class LSystem:
                     """
             )
     
-    def formatting(self, string: str) -> tuple[Coincidences, ...]:
+    def formatting(self, string: str) -> tuple:
         """
         :param string: str
         :return: tuple[tuple[str, int], ...]
@@ -200,9 +201,10 @@ class LSystem:
                 string = string.replace(keyword, keywords[0])
             string = sub(
                     f"(?<! )(?P<keyword>{escape(keywords[0])})+",
-                    lambda match: f" {match.group(1)}({len(match.group(0)) // len(keywords[0])})", string
+                    lambda match: f" {match.group(1)}({len(match.group(0)) // len(keywords[0])})",
+                    string
             )
-        result = (Coincidences(match.group(1), int(match.group(2))) for match in
+        result = ((match.group(1), int(match.group(2))) for match in
                   finditer(
                           r"(?P<keyword>\S+)\((?P<quantity>\d+)\)",
                           string
@@ -254,5 +256,7 @@ if __name__ == "__main__":
                 ("C", 'change')
             )
     )
-    some = [lsystem.generate_action_string('F', i, True) for i in range(12)]
+    for i in range(15):
+        for j in range(10):
+            lsystem.generate_action_string('F', j, True)
     print(time.monotonic() - start_time)
