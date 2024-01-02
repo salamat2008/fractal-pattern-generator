@@ -3,7 +3,7 @@ import time
 from json import dumps
 from re import escape, finditer, sub
 from sqlite3 import connect as sql_connect
-from typing import Iterable, NamedTuple
+from typing import Generator, Iterable, NamedTuple
 
 
 class Coincidences(NamedTuple):
@@ -84,7 +84,7 @@ class LSystem:
     
     def generate_action_string(
             self, string: str, number_of_iterations: int, my_memory_endless: bool = False
-    ) -> list[list]:
+    ) -> Generator[tuple[str, int]]:
         """
         :param my_memory_endless: bool
         :param string: str or Iterable[tuple[str, int]]
@@ -190,7 +190,7 @@ class LSystem:
                     """
             )
     
-    def formatting(self, string: str) -> tuple:
+    def formatting(self, string: str) -> Generator:
         """
         :param string: str
         :return: tuple[tuple[str, int], ...]
@@ -209,7 +209,7 @@ class LSystem:
                           r"(?P<keyword>\S+)\((?P<quantity>\d+)\)",
                           string
                   ))
-        return tuple(result)
+        return result
     
     def multiplication(self, argument: str) -> str:
         """
