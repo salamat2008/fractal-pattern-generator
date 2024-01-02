@@ -209,7 +209,7 @@ class LSystem:
                   ))
         return tuple(result)
     
-    def multiplicatio(self, argument: str) -> str:
+    def multiplication(self, argument: str) -> str:
         """
         :parameter argument: str
         :returns: str
