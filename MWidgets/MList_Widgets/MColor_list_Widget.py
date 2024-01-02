@@ -1,8 +1,11 @@
+from sys import argv
+
 from PySide6.QtGui import QColor, QIcon, QPainter, QPen, QPixmap, QRgba64, Qt
-from PySide6.QtWidgets import QColorDialog
+from PySide6.QtWidgets import QApplication, QColorDialog
 
 from .Modified_list_widget import Modified_list_widget, QListWidgetItem, QWidget
 
+QApplication(argv)
 
 class MColorDialog(QColorDialog):
     def __init__(
