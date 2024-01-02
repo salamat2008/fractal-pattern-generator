@@ -20,6 +20,7 @@ class MColorDialogTest(unittest.TestCase):
         self.assertIsNotNone(accepted)
 
 
+# noinspection PyTypeChecker
 class MColor_list_widgetWidgetTest(unittest.TestCase):
     def test_edit_current_item_positive(self):
         widget = MColor_list_widgetWidget()
