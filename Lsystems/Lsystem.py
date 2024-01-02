@@ -1,3 +1,4 @@
+import time
 from json import dumps, loads
 from re import escape, finditer, sub
 from sqlite3 import connect as sql_connect
@@ -81,12 +82,12 @@ class LSystem:
         self._keywords = temp1
     
     def generate_action_string(
-            self, axiom: str, n_iter: int, my_memory_endless: bool = False
+            self, string: str, number_of_iterations: int, my_memory_endless: bool = False
     ) -> tuple[Coincidences, ...]:
         """
         :param my_memory_endless: bool
-        :param axiom: str or Iterable[tuple[str, int]]
-        :param n_iter: int
+        :param string: str or Iterable[tuple[str, int]]
+        :param number_of_iterations: int
         :return: tuple[Coincidences, ...]
         """
         
@@ -96,9 +97,6 @@ class LSystem:
                 cursor.execute(f"INSERT INTO {table} ({column}) VALUES (?)", (value,))
             cursor.execute(f"SELECT {column}_id FROM {table} WHERE {column} = ?", (value,))
             return cursor.fetchone()[0]
-        
-        def toCoincidences(obj: Iterable):
-            return Coincidences(*obj)
         
         with sql_connect("../Lsystem_outs.db") as connection:
             cursor = connection.cursor()
@@ -132,11 +130,11 @@ class LSystem:
             )
             rules: str = dumps(self.rules)
             Keywords: str = dumps(self.keywords)
-            axiom = self.multiplication(axiom)
-            n_iter: int
+            string = self.multiplication(string)
+            number_of_iterations: int
             temp = (insert_in_to_tables("rules", "rule", rules),
                     insert_in_to_tables("keywords", "Keywords_array", Keywords),
-                    insert_in_to_tables("axioms", "axiom", axiom))
+                    insert_in_to_tables("axioms", "axiom", string))
             cursor.execute(
                     """
                                 SELECT conclusion_id,
@@ -153,29 +151,29 @@ class LSystem:
                                 Keywords_array = ? AND
                                 axiom = ? AND
                                 n_iter = ?
-                                """, (rules, Keywords, axiom, n_iter)
+                                """, (rules, Keywords, string, number_of_iterations)
             )
             result = cursor.fetchone()
             if not result:
                 if not my_memory_endless:
                     for _key_, _value_ in self.rules.items():
-                        factor = (_value_.count(_key_) / len(_key_)) ** n_iter
+                        factor = (_value_.count(_key_) / len(_key_)) ** number_of_iterations
                         if factor > 2_000_000:
                             raise OverflowError()
-                for _ in range(n_iter):
+                for _ in range(number_of_iterations):
                     for _key_, _value_ in self.rules.items():
-                        axiom = axiom.replace(_key_, _value_)
-                action_string = self.formatting(axiom)
+                        string = string.replace(_key_, _value_)
+                action_string = self.formatting(string)
                 cursor.execute(
                         """
                             INSERT INTO conclusions (rule_id, Keywords_array_id, axiom_id, n_iter, conclusion)
                             VALUES (?, ?, ?, ?, ?)
                             """,
-                        (*temp, n_iter, dumps(action_string))
+                        (*temp, number_of_iterations, dumps(action_string))
                 )
             else:
                 cursor.execute('SELECT conclusion FROM conclusions WHERE conclusion_id = ?', [result[0]])
-                action_string = tuple(map(toCoincidences, loads(cursor.fetchone()[0])))
+                action_string = tuple(Coincidences(*coincidence) for coincidence in loads(cursor.fetchone()[0]))
             return action_string
     
     @staticmethod
@@ -239,6 +237,7 @@ class LSystem:
 
 
 if __name__ == "__main__":
+    start_time = time.monotonic()
     # noinspection SpellCheckingInspection
     lsystem = LSystem(
             {"F": "FLFRRFLF"},
@@ -255,4 +254,5 @@ if __name__ == "__main__":
                 ("C", 'change')
             )
     )
-    print(lsystem.generate_action_string('F', 1))
+    print([lsystem.generate_action_string('F', i) for i in range(9)])
+    print(time.monotonic() - start_time)
