@@ -31,20 +31,20 @@ from Lsystems.Lsystem import LSystem
 class MButton(QPushButton):
     """
     MButton(self, icon: QIcon | QPixmap, text: str, parent: Optional[QWidget] = None,
-    func: Optional[Callable], sizepolicy: Optional[QSizePolicy])
+    func: Optional[Callable], size_policy: Optional[QSizePolicy])
 
     MButton(self, parent: Optional[QWidget] = None, func: Optional[Callable], sizepolicy: Optional[QSizePolicy])
 
     MButton(self, text: str, parent: Optional[QWidget] = None,
-    func: Optional[Callable], sizepolicy: Optional[QSizePolicy])
+    func: Optional[Callable], size_policy: Optional[QSizePolicy])
     :return: None
     """
 
     def __init__(
-        self,
-        *args,
-        func: Optional[Callable] = ...,
-        sizepolicy: Optional[QSizePolicy] = ...,
+            self,
+            *args,
+            func: Optional[Callable] = ...,
+            sizepolicy: Optional[QSizePolicy] = ...,
     ):
         super().__init__(*args)
         self.function = func
@@ -189,7 +189,7 @@ class MTextlistwidget(Modifiedlist):
         item = self.item(self.currentRow())
         if item is not None:
             itemtext, accepted = QInputDialog.getText(
-                self.parent(), "Изменение", "", text=item.text()
+                    self.parent(), "Изменение", "", text = item.text()
             )
             if len(itemtext) > 0 and accepted:
                 item.setText(itemtext)
@@ -217,7 +217,7 @@ class MColorlistwidget(Modifiedlist):
         item = self.item(self.currentRow())
         if item is not None:
             color, accepted = MColorDialog(
-                item.data(self.ColorRole), self.parent()
+                    item.data(self.ColorRole), self.parent()
             ).getcolor()
             if accepted:
                 item.setIcon(QIcon(self.drawiconforitem(color)))
@@ -249,14 +249,14 @@ class MColorlistwidget(Modifiedlist):
         if isinstance(color, QColor):
             accepted = True
         elif color is None:
-            color, accepted = MColorDialog(parent=self).getcolor()
+            color, accepted = MColorDialog(parent = self).getcolor()
         else:
             raise TypeError("The argument must be a QColor")
         if accepted:
             item = QListWidgetItem(
-                QIcon(self.drawiconforitem(color)),
-                f"#{hex(color.rgb()).upper()[4:]}",
-                self,
+                    QIcon(self.drawiconforitem(color)),
+                    f"#{hex(color.rgb()).upper()[4:]}",
+                    self,
             )
             item.setData(self.ColorRole, color)
             self.addItem(item)
@@ -284,9 +284,9 @@ class MColorlistwidget(Modifiedlist):
 
 class MColorDialog(QColorDialog):
     def __init__(
-        self,
-        initial: QColor | QRgba64 | Qt.GlobalColor | str | int = None,
-        parent: QWidget | None = None,
+            self,
+            initial: QColor | QRgba64 | Qt.GlobalColor | str | int = None,
+            parent: QWidget | None = None,
     ):
         super().__init__(initial, parent)
 
@@ -300,8 +300,8 @@ class MDialog(QDialog):
         super().__init__(*args)
         self.Vbox = QVBoxLayout(self)
         self.Hbox = QHBoxLayout(self)
-        self.accept_button = MButton("Применить", self, func=self.accept)
-        self.cancel_button = MButton("Отмена", self, func=self.reject)
+        self.accept_button = MButton("Применить", self, func = self.accept)
+        self.cancel_button = MButton("Отмена", self, func = self.reject)
         if layouts is not None:
             for layout in layouts:
                 self.Vbox.addLayout(layout)
@@ -332,16 +332,16 @@ class Settingdialog(MDialog):
 
     def __init__(self, *args, binds: tuple[str]):
         formLayout = QFormLayout()
-        super().__init__(*args, widgets=(), layouts=(formLayout,))
+        super().__init__(*args, widgets = (), layouts = (formLayout,))
         formLayout.setParent(self)
         self.setWindowTitle("Настройки")
         self.binds = [*binds]
         for standart, bind, label, row in zip(
-            self.standart_binds, self.binds, self.labels, range(len(self.labels))
+                self.standart_binds, self.binds, self.labels, range(len(self.labels))
         ):
             lineedit = QLineEdit(self)
             lineedit.setPlaceholderText(
-                f'введите ключевой символ (стандарт "{standart}")'
+                    f'введите ключевой символ (стандарт "{standart}")'
             )
             lineedit.setText(f"{bind}")
             self.lineedit_list.append(lineedit)
@@ -375,7 +375,7 @@ class Settingdialog(MDialog):
 
     @classmethod
     def getbinds(cls, binds: tuple[str], parent: QWidget = None):
-        win = cls(parent, binds=binds)
+        win = cls(parent, binds = binds)
         result = bool(win.exec())
         return win.binds, result
 
@@ -383,7 +383,7 @@ class Settingdialog(MDialog):
 class SpinboxDialog(MDialog):
     def __init__(self, *args, value: int = 1, title: str = " "):
         self.spinbox = QSpinBox()
-        super().__init__(*args, widgets=(self.spinbox,), layouts=())
+        super().__init__(*args, widgets = (self.spinbox,), layouts = ())
         self.value = value
         self.spinbox.setValue(value)
         self.spinbox.setParent(self)
@@ -391,9 +391,9 @@ class SpinboxDialog(MDialog):
 
     @classmethod
     def getvalue(
-        cls, parent: QWidget = None, value: int = 1, title: str = " "
+            cls, parent: QWidget = None, value: int = 1, title: str = " "
     ) -> tuple[any, bool]:
-        win = cls(parent, value=value, title=title)
+        win = cls(parent, value = value, title = title)
         result = bool(win.exec())
         return win.value, result
 
@@ -405,7 +405,7 @@ class SpinboxDialog(MDialog):
 class MComboboxDialog(MDialog):
     def __init__(self, *args, texts):
         self.combobox = QComboBox()
-        super().__init__(*args, widgets=(self.combobox,))
+        super().__init__(*args, widgets = (self.combobox,))
         self.combobox.setEditable(True)
         self.combobox.addItems(texts)
         if len(texts) > 0:
@@ -418,7 +418,7 @@ class MComboboxDialog(MDialog):
 
     @classmethod
     def getitem(cls, *args, texts):
-        win = cls(*args, texts=texts)
+        win = cls(*args, texts = texts)
         result = bool(win.exec())
         return win.currentitem, result
 
@@ -451,10 +451,10 @@ class MCanvas(QWidget):
         endpoint = self.mapToParent(event.position())
         if self.pressed:
             self.turtlestartpoint.setX(
-                self.turtlestartpoint.x() + endpoint.x() - self.startpoint.x()
+                    self.turtlestartpoint.x() + endpoint.x() - self.startpoint.x()
             )
             self.turtlestartpoint.setY(
-                self.turtlestartpoint.y() + endpoint.y() - self.startpoint.y()
+                    self.turtlestartpoint.y() + endpoint.y() - self.startpoint.y()
             )
             self.started = True
         self.startpoint = QPointF(endpoint)
@@ -465,17 +465,17 @@ class MCanvas(QWidget):
         super().mouseReleaseEvent(event)
 
     def start(
-        self,
-        rules: str,
-        axiom: str,
-        number_of_iterations: int,
-        linelenght,
-        angle: int,
-        deviations: tuple[int, int],
-        penwidth,
-        travel_length,
-        commandskeys: tuple[str, ...],
-        colors: list[QColor],
+            self,
+            rules: str,
+            axiom: str,
+            number_of_iterations: int,
+            linelenght,
+            angle: int,
+            deviations: tuple[int, int],
+            penwidth,
+            travel_length,
+            commandskeys: tuple[str, ...],
+            colors: list[QColor],
     ):
         lsys = LSystem(rules, commandskeys)
         if len(self.string) == 0:
@@ -490,7 +490,7 @@ class MCanvas(QWidget):
         self.colors = colors
         self.started = True
 
-    def paintEvent(self, event=None):
+    def paintEvent(self, event = None):
         if self.pixmap is None or self.pixmap.size() != self.size():
             self.pixmap = QPixmap(self.size())
             self.started = True
@@ -501,17 +501,17 @@ class MCanvas(QWidget):
                     Qt.PenStyle.SolidLine,
                     Qt.PenCapStyle.RoundCap,
                     Qt.PenJoinStyle.RoundJoin,
-                )
+            )
             painter = Turtle(
-                self.pixmap,
-                self.linelenght.value(),
-                self.angle.value(),
-                self.commands,
-                self.travel_length.value(),
-                self.colors,
-                self.deviations[0],
-                self.deviations[1],
-                pen
+                    self.pixmap,
+                    self.linelenght.value(),
+                    self.angle.value(),
+                    self.commands,
+                    self.travel_length.value(),
+                    self.colors,
+                    self.deviations[0],
+                    self.deviations[1],
+                    pen
             )
             painter.fillRect(self.pixmap.rect(), QColor("white"))
             painter.draw(self.string, self.turtlestartpoint)
@@ -538,16 +538,16 @@ class Turtle(QPainter):
     colorindex = 0
 
     def __init__(
-        self,
-        paintdevice,
-        linelenght: float | int,
-        angle: float | int,
-        commandskeys: tuple[str, ...],
-        travel_length: int,
-        colors: list[QColor],
-        random_rotation_percentage: int = 0,
-        random_linelenght_percentage: int = 0,
-        pen = QColor('black')
+            self,
+            paintdevice,
+            linelenght: float | int,
+            angle: float | int,
+            commandskeys: tuple[str, ...],
+            travel_length: int,
+            colors: list[QColor],
+            random_rotation_percentage: int = 0,
+            random_linelenght_percentage: int = 0,
+            pen = QColor('black')
     ):
         super().__init__(paintdevice)
         self.mdevice = paintdevice
@@ -558,8 +558,8 @@ class Turtle(QPainter):
         self.rotateangle = angle
         self.random_rotation: float = (angle / 100) * random_rotation_percentage
         self.random_linelenght: float = (
-            linelenght / 100
-        ) * random_linelenght_percentage
+                                                linelenght / 100
+                                        ) * random_linelenght_percentage
         self.commandsdict = {
             "F": self.forward,
             "B": self.backward,
@@ -598,11 +598,11 @@ class Turtle(QPainter):
             y -= (lenght + randomchange) * sin(radians(self.turtleangle))
         end = QPointF(x, y)
         start_in_rect = (
-            self.mdevice.width() > self.point.x() > 0
-            and self.mdevice.height() > self.point.y() > 0
+                self.mdevice.width() > self.point.x() > 0
+                and self.mdevice.height() > self.point.y() > 0
         )
         end_in_rect = (
-            self.mdevice.width() > end.x() > 0 and self.mdevice.height() > end.y() > 0
+                self.mdevice.width() > end.x() > 0 and self.mdevice.height() > end.y() > 0
         )
         if start_in_rect or end_in_rect:
             self.drawLine(self.point, end)
@@ -623,11 +623,11 @@ class Turtle(QPainter):
             y += (lenght + randomchange) * sin(radians(self.turtleangle))
         end = QPointF(x, y)
         start_in_rect = (
-            self.mdevice.width() > self.point.x() > 0
-            and self.mdevice.height() > self.point.y() > 0
+                self.mdevice.width() > self.point.x() > 0
+                and self.mdevice.height() > self.point.y() > 0
         )
         end_in_rect = (
-            self.mdevice.width() > end.x() > 0 and self.mdevice.height() > end.y() > 0
+                self.mdevice.width() > end.x() > 0 and self.mdevice.height() > end.y() > 0
         )
         if start_in_rect or end_in_rect:
             self.drawLine(self.point, end)
@@ -684,16 +684,16 @@ class Turtle(QPainter):
         lenght = self.linelenght
         point1 = QPointF(self.point)
         point2 = QPointF(
-            point1.x() + lenght * cos(radians(self.turtleangle)),
-            point1.y() - lenght * sin(radians(self.turtleangle)),
+                point1.x() + lenght * cos(radians(self.turtleangle)),
+                point1.y() - lenght * sin(radians(self.turtleangle)),
         )
         point3 = QPointF(
-            point2.x() + lenght * cos(radians(self.turtleangle + 90)),
-            point2.y() - lenght * sin(radians(self.turtleangle + 90)),
+                point2.x() + lenght * cos(radians(self.turtleangle + 90)),
+                point2.y() - lenght * sin(radians(self.turtleangle + 90)),
         )
         point4 = QPointF(
-            point3.x() + lenght * cos(radians(self.turtleangle + 180)),
-            point3.y() - lenght * sin(radians(self.turtleangle + 180)),
+                point3.x() + lenght * cos(radians(self.turtleangle + 180)),
+                point3.y() - lenght * sin(radians(self.turtleangle + 180)),
         )
         for _ in range(quantity):
             self.drawPolygon((point1, point2, point3, point4))
@@ -702,12 +702,12 @@ class Turtle(QPainter):
         lenght = self.linelenght
         point1 = QPointF(self.point)
         point2 = QPointF(
-            point1.x() + lenght * cos(radians(self.turtleangle)),
-            point1.y() - lenght * sin(radians(self.turtleangle)),
+                point1.x() + lenght * cos(radians(self.turtleangle)),
+                point1.y() - lenght * sin(radians(self.turtleangle)),
         )
         point3 = QPointF(
-            point2.x() + lenght * cos(radians(self.turtleangle + 120)),
-            point2.y() - lenght * sin(radians(self.turtleangle + 120)),
+                point2.x() + lenght * cos(radians(self.turtleangle + 120)),
+                point2.y() - lenght * sin(radians(self.turtleangle + 120)),
         )
         for _ in range(quantity):
             self.drawPolygon((point1, point2, point3))
