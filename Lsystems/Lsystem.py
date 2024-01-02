@@ -1,5 +1,4 @@
 import pickle
-import time
 from json import dumps
 from re import escape, finditer, sub
 from sqlite3 import connect as sql_connect
@@ -234,24 +233,4 @@ class LSystem:
 
 
 if __name__ == "__main__":
-    start_time = time.monotonic()
-    # noinspection SpellCheckingInspection
-    lsystem = LSystem(
-            {"F": "FLFRRFLF"},
-            (
-                ("F", "forward"),
-                ("B", "back"),
-                ("L", "left"),
-                ("R", "right"),
-                ("Mf", "mforward"),
-                ("Mb", "mback"),
-                ("T", 'triangle'),
-                ("S", 'square'),
-                ("E", 'circle'),
-                ("C", 'change')
-            )
-    )
-    for _ in range(8):
-        for jindex in range(12):
-            lsystem.generate_action_string('F', jindex, True)
-    print(time.monotonic() - start_time)
+    pass
