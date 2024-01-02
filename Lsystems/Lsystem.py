@@ -159,7 +159,7 @@ class LSystem:
                     for _key_, _value_ in self.rules.items():
                         factor = (_value_.count(_key_) / len(_key_)) ** number_of_iterations
                         if factor > 2_000_000:
-                            raise OverflowError()
+                            raise OverflowError('Your memory is not infinity')
                 for _ in range(number_of_iterations):
                     for _key_, _value_ in self.rules.items():
                         string = string.replace(_key_, _value_)
@@ -254,5 +254,5 @@ if __name__ == "__main__":
                 ("C", 'change')
             )
     )
-    print([lsystem.generate_action_string('F', i) for i in range(9)])
+    some = [lsystem.generate_action_string('F', i, True) for i in range(12)]
     print(time.monotonic() - start_time)
