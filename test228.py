@@ -4,8 +4,6 @@ from typing import Callable, Iterable
 import numpy as np
 from PySide6.QtCore import QLineF, QPoint, QPointF
 from PySide6.QtGui import QColor, QGradient, QPainter, QPixmap, Qt
-from PySide6.QtWebEngineCore import QWebEnginePage
-from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QDoubleSpinBox, QWidget
 
 from Lsystems.Lsystem import Coincidences, LSystem
@@ -131,7 +129,7 @@ class Widget(QWidget):
     n_iter: int = 0
     lelt = -10
 
-    def __init__(self, parent):
+    def __init__(self, parent = None):
         super().__init__(parent)
         self.lsys = LSystem(
                 {"F": "FLFRRFLF"},
@@ -226,10 +224,6 @@ class Widget(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = QWidget()
-    page = QWebEnginePage()
-    page.setUrl('https://www.youtube.com')
-    Web = QWebEngineView(page, window)
-    Web.show()
-    window.show()
+    win = Widget()
+    win.show()
     app.exec()
