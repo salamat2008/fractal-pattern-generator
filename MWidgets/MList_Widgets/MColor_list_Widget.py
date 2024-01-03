@@ -7,6 +7,7 @@ from .Modified_list_widget import Modified_list_widget, QListWidgetItem, QWidget
 
 QApplication(argv)
 
+
 class MColorDialog(QColorDialog):
     def __init__(
             self,
@@ -15,7 +16,7 @@ class MColorDialog(QColorDialog):
     ):
         super().__init__(initial, parent)
     
-    def getcolor(self) -> tuple[QColor, bool]:
+    def get_colors(self) -> tuple[QColor, bool]:
         result = bool(self.exec())
         return self.selectedColor(), result
 
@@ -40,21 +41,21 @@ class MColor_list_widgetWidget(Modified_list_widget):
         if item is not None:
             color, accepted = MColorDialog(
                     item.data(self.ColorRole), self.parent()
-            ).getcolor()
+            ).get_colors()
             if accepted:
-                item.setIcon(QIcon(self.drawiconforitem(color)))
+                item.setIcon(self.draw_icon_for_item(color))
                 item.setText(f"#{hex(color.rgb()).upper()[4:]}")
                 item.setData(self.ColorRole, color)
     
     def addItem(self, *args: QListWidgetItem | QColor | str):
         if len(args) == 0:
-            self.addcolor()
+            self.add_color()
         elif isinstance(*args, QColor):
-            self.addcolor(*args)
+            self.add_color()
         else:
             super().addItem(*args)
     
-    def addcolor(self, color: QColor = None):
+    def add_color(self, color: QColor = None):
         """
         If the color parameter is None then MColorDialog is called,
         If the claim button is not pressed,
@@ -63,37 +64,38 @@ class MColor_list_widgetWidget(Modified_list_widget):
         then it is added by the self.additem method
         and becomes current
         otherwise
-        TypeEror rises
-        :raises TypeEror:
+        TypeError rises
+        :raises TypeError:
         :param color:
         :return: None
         """
         if isinstance(color, QColor):
             accepted = True
         elif color is None:
-            color, accepted = MColorDialog(parent = self).getcolor()
+            color, accepted = MColorDialog(parent = self).get_colors()
         else:
             raise TypeError("The argument must be a QColor")
         if accepted:
             item = QListWidgetItem(
-                    QIcon(self.drawiconforitem(color)),
+                    self.draw_icon_for_item(color),
                     f"#{hex(color.rgb()).upper()[4:]}",
                     self,
             )
             item.setData(self.ColorRole, color)
             self.addItem(item)
     
-    def drawiconforitem(self, color: QColor) -> QPixmap:
+    def draw_icon_for_item(self, color: QColor) -> QIcon:
         icon = self.icon.copy()
         with QPainter(icon) as painter:
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             painter.setPen(QPen(QColor("black"), 2))
             painter.setBrush(color)
             painter.drawEllipse(1, 1, icon.height() - 2, icon.width() - 2)
-        return icon
+        return QIcon(icon)
     
-    def getcolorlist(self) -> list[QColor]:
-        return [item.data(self.ColorRole) for item in self.getitems()]
+    def get_colors(self) -> tuple[QColor]:
+        # noinspection PyTypeChecker
+        return tuple(item.data(self.ColorRole) for item in self.getitems())
     
     def getitems(self) -> list[QListWidgetItem]:
         """
