@@ -254,9 +254,6 @@ class LSystem:
     
     def __repr__(self):
         return f"{self.__class__.__name__}{self.rules, self.keywords}"
-    
-    def __str__(self):
-        return f"{self.__class__.__name__}{self.rules, self.keywords}"
 
 
 if __name__ == "__main__":
