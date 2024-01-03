@@ -16,7 +16,7 @@ class MColorDialog(QColorDialog):
     ):
         super().__init__(initial, parent)
     
-    def get_colors(self) -> tuple[QColor, bool]:
+    def get_color(self) -> tuple[QColor, bool]:
         result = bool(self.exec())
         return self.selectedColor(), result
 
@@ -41,7 +41,7 @@ class MColor_list_widgetWidget(Modified_list_widget):
         if item is not None:
             color, accepted = MColorDialog(
                     item.data(self.ColorRole), self.parent()
-            ).get_colors()
+            ).get_color()
             if accepted:
                 item.setIcon(self.draw_icon_for_item(color))
                 item.setText(f"#{hex(color.rgb()).upper()[4:]}")
@@ -72,7 +72,7 @@ class MColor_list_widgetWidget(Modified_list_widget):
         if isinstance(color, QColor):
             accepted = True
         elif color is None:
-            color, accepted = MColorDialog(parent = self).get_colors()
+            color, accepted = MColorDialog(parent = self).get_color()
         else:
             raise TypeError("The argument must be a QColor")
         if accepted:

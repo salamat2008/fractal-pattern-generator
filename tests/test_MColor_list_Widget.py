@@ -7,15 +7,15 @@ from MWidgets.MList_Widgets.MColor_list_Widget import MColor_list_widgetWidget, 
 
 
 class MColorDialogTest(unittest.TestCase):
-    def test_getcolor_positive(self):
+    def test_get_color_positive(self):
         dialog = MColorDialog(QColor(Qt.GlobalColor.red))
-        color, accepted = dialog.get_colors()
+        color, accepted = dialog.get_color()
         self.assertEqual(color, QColor(Qt.GlobalColor.red))
         self.assertTrue(accepted)
     
-    def test_getcolor_negative(self):
+    def test_get_color_negative(self):
         dialog = MColorDialog()
-        color, accepted = dialog.get_colors()
+        color, accepted = dialog.get_color()
         self.assertIsNotNone(color)
         self.assertIsNotNone(accepted)
 
@@ -42,7 +42,7 @@ class MColor_list_widgetWidgetTest(unittest.TestCase):
         
         self.assertIsNone(widget.item(0))
     
-    def test_addcolor_with_color(self):
+    def test_add_color_with_color(self):
         widget = MColor_list_widgetWidget()
         widget.add_color(QColor(Qt.GlobalColor.red))
         
@@ -50,14 +50,14 @@ class MColor_list_widgetWidgetTest(unittest.TestCase):
         self.assertIsNotNone(item)
         self.assertEqual(item.text(), "#FF0000")
     
-    def test_addcolor_with_none(self):
+    def test_add_color_with_none(self):
         widget = MColor_list_widgetWidget()
         widget.add_color()
         
         item = widget.item(0)
         self.assertIsNotNone(item)
     
-    def test_addcolor_with_invalid_color(self):
+    def test_add_color_with_invalid_color(self):
         widget = MColor_list_widgetWidget()
         with self.assertRaises(TypeError):
             widget.add_color("invalid color")
@@ -71,13 +71,13 @@ class MColor_list_widgetWidgetTest(unittest.TestCase):
         self.assertEqual(icon.height(), 30)
         self.assertEqual(icon.width(), 30)
     
-    def test_getcolorlist(self):
+    def test_get_colors(self):
         widget = MColor_list_widgetWidget()
         widget.add_color(QColor(Qt.GlobalColor.red))
         widget.add_color(QColor(Qt.GlobalColor.green))
         widget.add_color(QColor(Qt.GlobalColor.blue))
         
-        color_list = widget.getcolors()
+        color_list = widget.get_colors()
         
         self.assertEqual(len(color_list), 3)
         self.assertIsInstance(color_list[0], QColor)
