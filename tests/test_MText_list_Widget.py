@@ -70,7 +70,7 @@ class MText_list_WidgetTests(unittest.TestCase):
         item = QListWidgetItem("Item 1")
         widget.addItem(item)
         widget.setCurrentItem(item)
-        with mock.patch.object(QInputDialog, "getText", return_value = ("", True)):
+        with mock.patch.object(QInputDialog, "getText", return_value = ("Item 1", True)):
             widget.edit_current_item()
             self.assertEqual(widget.count(), 1)
             item_text = widget.item(0).text()
