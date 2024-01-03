@@ -1,9 +1,12 @@
+"""
+
+"""
 import unittest
 
 from Lsystems.Lsystem import LSystem
 
 
-# noinspection PyTypeChecker
+# noinspection PyTypeChecker,SpellCheckingInspection
 class TestLSystem(unittest.TestCase):
     def test_rules_setter(self):
         # Positive test case: setting rules as a dictionary
