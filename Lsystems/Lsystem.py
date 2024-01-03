@@ -11,82 +11,96 @@ class LSystem:
     
     def __init__(
             self,
-            arg1: Iterable[str] | dict[str, str] | str | "LSystem" | None = None,
-            arg2: Iterable[str] | Iterable[Iterable[str]] | None = None,
+            rule: Iterable[str] | dict[str, str] | str | "LSystem" = None,
+            keywords: Iterable[str] | Iterable[Iterable[str]] = None,
     ) -> None:
         """
-        LSystem(self, arg1: Iterable[str] | dict[str, str] | str,
-        arg2: Iterable[str] | Iterable[Iterable[str]])
+        Initialize the LSystem object.
 
-        LSystem(self, arg1: LSystem2d)
-        :raises TypeError:
-        :parameter arg1: Iterable[str] | dict[str, str] | str | "LSystem" | None
-        :parameter arg2: Iterable[str] | Iterable[Iterable[str]] | None
+        :param rule: Rules of the LSystem. Can be an iterable of strings, a dictionary of strings,
+                     a single string, or another LSystem object.
+        :param keywords: Keywords of the LSystem. Can be an iterable of strings or an iterable of iterables of strings.
         """
-        if isinstance(arg1, LSystem):
-            print(type(arg1))
-            self.keywords = arg1.keywords.copy()
-            self.rules = arg1.rules.copy()
-        elif (arg2 is not None) and (arg1 is not None):
-            self.keywords = arg2
-            self.rules = arg1
+        if isinstance(rule, LSystem):
+            self.keywords = rule.keywords.copy()
+            self.rules = rule.rules.copy()
+        elif rule is not None and keywords is not None:
+            self.keywords = keywords
+            self.rules = rule
     
     @property
     def rules(self) -> dict[str, str]:
+        """
+        Get the rules of the LSystem.
+
+        :return: Dictionary of rules.
+        """
         return self._rules
     
     @rules.setter
     def rules(self, rules: Iterable[str] | dict[str, str] | str) -> None:
+        """
+        Set the rules of the LSystem.
+
+        :param rules: Rules of the LSystem. Can be an iterable of strings, a dictionary of strings, or a single string.
+        """
         if isinstance(rules, dict):
             self._rules = rules.copy()
         elif isinstance(rules, str):
             self._rules.clear()
-            rules: list = self.multiplication(rules).split(maxsplit = 1)
-            if len(rules) == 2:
-                self._rules[rules[0]] = rules[1]
+            rules_list = self.multiplication(rules).split(maxsplit = 1)
+            if len(rules_list) == 2:
+                self._rules[rules_list[0]] = rules_list[1]
         elif isinstance(rules, Iterable):
             self._rules.clear()
-            rules: Iterable
             for rule in rules:
-                rule = self.multiplication(rule).split(maxsplit = 1)
-                if len(rule) == 2:
-                    self._rules[rule[0]] = rule[1]
+                rule_list = self.multiplication(rule).split(maxsplit = 1)
+                if len(rule_list) == 2:
+                    self._rules[rule_list[0]] = rule_list[1]
         else:
-            raise TypeError
+            raise TypeError("Invalid type for rules.")
     
     @property
     def keywords(self) -> list[list[str]]:
+        """
+        Get the keywords of the LSystem.
+
+        :return: List of keywords.
+        """
         return self._keywords
     
     @keywords.setter
     def keywords(self, keywords: Iterable[str] | Iterable[Iterable[str]]) -> None:
+        """
+        Set the keywords of the LSystem.
+
+        :param keywords: Keywords of the LSystem. Can be an iterable of strings or an iterable of iterables of strings.
+        """
         if not isinstance(keywords, Iterable):
-            raise TypeError(
-                    "The argument must be a Iterable[Iterable[str]] or Iterable[str]"
-            )
-        temp1 = []
+            raise TypeError("Invalid type for keywords. Must be an iterable.")
+        temp_keywords = []
         for keyword in keywords:
             if isinstance(keyword, str):
-                temp1.append([keyword])
+                temp_keywords.append([keyword])
             elif isinstance(keyword, Iterable):
-                temp1.append(sorted(keyword, key = len))
+                temp_keywords.append(sorted(keyword, key = len))
             else:
-                raise TypeError(
-                        "The argument must be a Iterable[Iterable[str]] or Iterable[str]"
-                )
-        self._keywords = temp1
+                raise TypeError("Invalid type for keywords. Must be an iterable of strings or iterables of strings.")
+        self._keywords = temp_keywords
     
     def generate_action_string(
             self, string: str, number_of_iterations: int, my_memory_endless: bool = False
-    ) -> tuple[tuple[str, int]]:
+    ) -> list[tuple[str, int]]:
         """
-        :param my_memory_endless: bool
-        :param string: str or Iterable[tuple[str, int]]
-        :param number_of_iterations: int
-        :return: tuple[Coincidences, ...]
+        Generate the action string based on the LSystem.
+
+        :param string: Starting string.
+        :param number_of_iterations: Number of iterations to perform.
+        :param my_memory_endless: Flag indicating whether the memory is endless.
+        :return: List of tuples representing the action string.
         """
         
-        def insert_in_to_tables(table: str, column: str, value: str) -> int:
+        def insert_into_tables(table: str, column: str, value: str) -> int:
             cursor.execute(f"SELECT {column}_id FROM {table} WHERE {column} = ?", (value,))
             if not cursor.fetchone():
                 cursor.execute(f"INSERT INTO {table} ({column}) VALUES (?)", (value,))
@@ -101,12 +115,12 @@ class LSystem:
                         rule_id INTEGER NOT NULL UNIQUE,
                         rule TEXT UNIQUE,
                         PRIMARY KEY("rule_id" AUTOINCREMENT)
-                        );
+                    );
                     CREATE TABLE IF NOT EXISTS axioms (
                         axiom_id INTEGER NOT NULL UNIQUE,
                         axiom TEXT NOT NULL UNIQUE,
                         PRIMARY KEY("axiom_id" AUTOINCREMENT)
-                        );
+                    );
                     CREATE TABLE IF NOT EXISTS conclusions (
                         conclusion_id INTEGER NOT NULL UNIQUE,
                         rule_id INTEGER NOT NULL,
@@ -115,21 +129,25 @@ class LSystem:
                         n_iter INTEGER NOT NULL DEFAULT 1,
                         conclusion BLOB NOT NULL,
                         PRIMARY KEY("conclusion_id" AUTOINCREMENT)
-                        );
+                    );
                     CREATE TABLE IF NOT EXISTS keywords (
                         Keywords_array_id INTEGER NOT NULL UNIQUE,
                         Keywords_array TEXT UNIQUE,
                         PRIMARY KEY("Keywords_array_id" AUTOINCREMENT)
-                        )
+                    )
                     """
             )
-            rules: str = dumps(self.rules)
-            Keywords: str = dumps(self.keywords)
+            
+            rules = dumps(self.rules)
+            keywords = dumps(self.keywords)
+            
             string = self.multiplication(string)
-            number_of_iterations: int
-            temp = (insert_in_to_tables("rules", "rule", rules),
-                    insert_in_to_tables("keywords", "Keywords_array", Keywords),
-                    insert_in_to_tables("axioms", "axiom", string))
+            temp = (
+                insert_into_tables("rules", "rule", rules),
+                insert_into_tables("keywords", "Keywords_array", keywords),
+                insert_into_tables("axioms", "axiom", string)
+            )
+            
             cursor.execute(
                     """
                     SELECT conclusion_id,
@@ -147,33 +165,39 @@ class LSystem:
                     axiom = ? AND
                     n_iter = ?
                     """,
-                    (rules, Keywords, string, number_of_iterations)
+                    (rules, keywords, string, number_of_iterations)
             )
+            
             result = cursor.fetchone()
+            
             if not result:
                 if not my_memory_endless:
-                    for _key_, _value_ in self.rules.items():
-                        factor = (_value_.count(_key_) / len(_key_)) ** number_of_iterations
-                        if factor > 2_000_000:
-                            raise OverflowError('Your memory is not infinity')
+                    for _key, _value in self.rules.items():
+                        factor = (_value.count(_key) / len(_key)) ** number_of_iterations
+                        if factor > 3_000_000:
+                            raise OverflowError("Memory limit exceeded.")
                 for _ in range(number_of_iterations):
-                    for _key_, _value_ in self.rules.items():
-                        string = string.replace(_key_, _value_)
+                    for _key, _value in self.rules.items():
+                        string = string.replace(_key, _value)
                 action_string = tuple(self.formatting(string))
                 cursor.execute(
                         """
-                            INSERT INTO conclusions (rule_id, Keywords_array_id, axiom_id, n_iter, conclusion)
-                            VALUES (?, ?, ?, ?, ?)
-                            """,
+                        INSERT INTO conclusions (rule_id, Keywords_array_id, axiom_id, n_iter, conclusion)
+                        VALUES (?, ?, ?, ?, ?)
+                        """,
                         (*temp, number_of_iterations, pickle.dumps(action_string))
                 )
             else:
                 cursor.execute('SELECT conclusion FROM conclusions WHERE conclusion_id = ?', [result[0]])
                 action_string = pickle.loads(cursor.fetchone()[0])
+            
             return action_string
     
     @staticmethod
     def clear_database():
+        """
+        Clear the LSystem database.
+        """
         with sql_connect("../Lsystem_outs.db") as connection:
             cursor = connection.cursor()
             cursor.executescript(
@@ -185,12 +209,13 @@ class LSystem:
                     """
             )
     
-    def formatting(self, string: str) -> Generator:
+    def formatting(self, string: str) -> Generator[tuple[str, int], None, None]:
         """
-        :param string: str
-        :return: tuple[tuple[str, int], ...]
+        Format the string by replacing keywords and adding quantity information.
+
+        :param string: Input string.
+        :return: Generator of tuples representing the formatted string.
         """
-        
         for keywords in self.keywords:
             for keyword in keywords:
                 string = string.replace(keyword, keywords[0])
@@ -199,19 +224,20 @@ class LSystem:
                     lambda match: f" {match.group(1)}({len(match.group(0)) // len(keywords[0])})",
                     string
             )
-        result = ((match.group(1), int(match.group(2))) for match in
-                  finditer(
-                          r"(?P<keyword>\S+)\((?P<quantity>\d+)\)",
-                          string
-                  ))
+        result = (
+            (match.group(1), int(match.group(2))) for match in finditer(
+                r"(?P<keyword>\S+)\((?P<quantity>\d+)\)",
+                string, )
+        )
         return result
     
     def multiplication(self, argument: str) -> str:
         """
-        :parameter argument: str
-        :returns: str
+        Perform multiplication of characters based on the keywords.
+
+        :param argument: Input string.
+        :return: Resulting string after multiplication.
         """
-        
         for keywords in self.keywords:
             for keyword in keywords:
                 argument = sub(
