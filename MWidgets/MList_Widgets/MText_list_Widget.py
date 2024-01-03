@@ -13,7 +13,7 @@ class MText_list_widgetWidget(Modified_list_widget):
         :param args:
         :return: None
         """
-        if len(args) == 0:
+        if not args:
             self.add_text()
         else:
             super().addItem(*args)
@@ -38,7 +38,7 @@ class MText_list_widgetWidget(Modified_list_widget):
             text, accepted = QInputDialog.getText(self.parent(), "Добавление", "")
         else:
             raise TypeError("The argument must be a string")
-        if len(text) > 0 and accepted:
+        if text and accepted:
             self.addItem(text)
     
     def edit_current_item(self):
@@ -54,7 +54,7 @@ class MText_list_widgetWidget(Modified_list_widget):
             item_text, accepted = QInputDialog.getText(
                     self.parent(), "Изменение", "", text = item.text()
             )
-            if len(item_text) > 0 and accepted:
+            if item_text and accepted:
                 item.setText(item_text)
     
     def get_texts(self) -> tuple[str]:
