@@ -72,6 +72,52 @@ class MText_list_WidgetTests(unittest.TestCase):
         self.assertEqual(2, len(texts))
         self.assertEqual("Item 1", texts[0])
         self.assertEqual("Item 2", texts[1])
+    
+    def test_addItem_positive(self):
+        self.widget.addItem("test")
+        self.assertEqual(1, self.widget.count())
+        self.assertEqual(self.widget.item(0).text(), "test")
+    
+    def test_raise_item_positive(self):
+        self.widget.addItem("item1")
+        self.widget.addItem("item2")
+        self.widget.setCurrentRow(1)
+        self.widget.raise_item()
+        self.assertEqual(0, self.widget.currentRow())
+        self.assertEqual(self.widget.item(0).text(), "item2")
+        self.assertEqual(self.widget.item(1).text(), "item1")
+    
+    def test_raise_item_negative(self):
+        self.widget.raise_item()
+        self.assertEqual(0, self.widget.count())
+    
+    def test_omit_item_positive(self):
+        self.widget.addItem("item1")
+        self.widget.addItem("item2")
+        self.widget.setCurrentRow(0)
+        self.widget.omit_item()
+        self.assertEqual(1, self.widget.currentRow())
+        self.assertEqual(self.widget.item(0).text(), "item2")
+        self.assertEqual(self.widget.item(1).text(), "item1")
+    
+    def test_omit_item_negative(self):
+        self.widget.omit_item()
+        self.assertEqual(0, self.widget.count())
+    
+    def test_take_current_item_positive(self):
+        self.widget.addItem("test")
+        item = self.widget.take_current_item()
+        self.assertEqual(item.text(), "test")
+        self.assertEqual(0, self.widget.count())
+    
+    def test_take_current_item_negative(self):
+        item = self.widget.take_current_item()
+        self.assertIsNone(item)
+    
+    def test_clear(self):
+        self.widget.addItem("test")
+        self.widget.clear()
+        self.assertEqual(0, self.widget.count())
 
 
 if __name__ == "__main__":
