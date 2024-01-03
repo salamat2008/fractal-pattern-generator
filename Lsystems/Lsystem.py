@@ -97,31 +97,31 @@ class LSystem:
             cursor = connection.cursor()
             cursor.executescript(
                     """
-                                CREATE TABLE IF NOT EXISTS rules (
-                                    rule_id INTEGER NOT NULL UNIQUE,
-                                    rule TEXT UNIQUE,
-                                    PRIMARY KEY("rule_id" AUTOINCREMENT)
-                                    );
-                                CREATE TABLE IF NOT EXISTS axioms (
-                                    axiom_id INTEGER NOT NULL UNIQUE,
-                                    axiom TEXT NOT NULL UNIQUE,
-                                    PRIMARY KEY("axiom_id" AUTOINCREMENT)
-                                    );
-                                CREATE TABLE IF NOT EXISTS conclusions (
-                                    conclusion_id INTEGER NOT NULL UNIQUE,
-                                    rule_id INTEGER NOT NULL,
-                                    Keywords_array_id INTEGER NOT NULL,
-                                    axiom_id INTEGER NOT NULL,
-                                    n_iter INTEGER NOT NULL DEFAULT 1,
-                                    conclusion BLOB NOT NULL,
-                                    PRIMARY KEY("conclusion_id" AUTOINCREMENT)
-                                    );
-                                CREATE TABLE IF NOT EXISTS keywords (
-                                    Keywords_array_id INTEGER NOT NULL UNIQUE,
-                                    Keywords_array TEXT UNIQUE,
-                                    PRIMARY KEY("Keywords_array_id" AUTOINCREMENT)
-                                    )
-                                """
+                    CREATE TABLE IF NOT EXISTS rules (
+                        rule_id INTEGER NOT NULL UNIQUE,
+                        rule TEXT UNIQUE,
+                        PRIMARY KEY("rule_id" AUTOINCREMENT)
+                        );
+                    CREATE TABLE IF NOT EXISTS axioms (
+                        axiom_id INTEGER NOT NULL UNIQUE,
+                        axiom TEXT NOT NULL UNIQUE,
+                        PRIMARY KEY("axiom_id" AUTOINCREMENT)
+                        );
+                    CREATE TABLE IF NOT EXISTS conclusions (
+                        conclusion_id INTEGER NOT NULL UNIQUE,
+                        rule_id INTEGER NOT NULL,
+                        Keywords_array_id INTEGER NOT NULL,
+                        axiom_id INTEGER NOT NULL,
+                        n_iter INTEGER NOT NULL DEFAULT 1,
+                        conclusion BLOB NOT NULL,
+                        PRIMARY KEY("conclusion_id" AUTOINCREMENT)
+                        );
+                    CREATE TABLE IF NOT EXISTS keywords (
+                        Keywords_array_id INTEGER NOT NULL UNIQUE,
+                        Keywords_array TEXT UNIQUE,
+                        PRIMARY KEY("Keywords_array_id" AUTOINCREMENT)
+                        )
+                    """
             )
             rules: str = dumps(self.rules)
             Keywords: str = dumps(self.keywords)
