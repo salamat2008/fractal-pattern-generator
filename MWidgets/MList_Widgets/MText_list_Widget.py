@@ -44,7 +44,7 @@ class MText_list_Widget(Modified_list_widget):
         the text remains the same.
         :return: None
         """
-        item = self.item(self.currentRow())
+        item = self.currentItem()
         if item is not None:
             item_text, accepted = QInputDialog.getText(
                     self.parent(), "Изменение", "", text = item.text()

@@ -19,35 +19,35 @@ class MText_list_WidgetTests(unittest.TestCase):
         widget = MText_list_Widget()
         widget.addItem()
         self.assertEqual(1, widget.count())
-        item_text = widget.item(0).text()
-        self.assertEqual(item_text, "Some item")
+        item_text = widget.currentItem().text()
+        self.assertEqual("Some item", item_text)
     
     def test_addItem_with_string_argument(self):
         widget = MText_list_Widget()
         widget.addItem("Item 1")
-        self.assertEqual(widget.count(), 1)
-        item_text = widget.item(0).text()
-        self.assertEqual(item_text, "Item 1")
+        self.assertEqual(1, widget.count())
+        item_text = widget.currentItem().text()
+        self.assertEqual("Item 1", item_text)
     
     def test_addItem_with_listwidgetitem_argument(self):
         widget = MText_list_Widget()
         item = QListWidgetItem("Item 1")
         widget.addItem(item)
         self.assertEqual(1, widget.count())
-        item_text = widget.item(0).text()
-        self.assertEqual(item_text, "Item 1")
+        item_text = widget.currentItem().text()
+        self.assertEqual("Item 1", item_text)
     
     def test_add_text_with_valid_text(self):
         widget = MText_list_Widget()
         widget.add_text("Item 1")
         self.assertEqual(1, widget.count())
-        item_text = widget.item(0).text()
-        self.assertEqual(item_text, "Item 1")
+        item_text = widget.currentItem().text()
+        self.assertEqual("Item 1", item_text)
     
     def test_add_text_with_empty_text(self):
         widget = MText_list_Widget()
         widget.add_text("")
-        self.assertEqual(widget.count(), 1)
+        self.assertEqual(1, widget.count())
     
     @mock.patch.object(QInputDialog, "getText")
     def test_add_text_with_no_text(self, mock_gettext: mock.MagicMock):
@@ -55,8 +55,8 @@ class MText_list_WidgetTests(unittest.TestCase):
         widget = MText_list_Widget()
         widget.add_text()
         self.assertEqual(1, widget.count())
-        item_text = widget.item(0).text()
-        self.assertEqual(item_text, "Some item")
+        item_text = widget.currentItem().text()
+        self.assertEqual("Some item", item_text)
     
     def test_add_text_with_invalid_argument(self):
         widget = MText_list_Widget()
@@ -70,16 +70,16 @@ class MText_list_WidgetTests(unittest.TestCase):
         widget = MText_list_Widget()
         widget.addItem("Item 1")
         widget.edit_current_item()
-        self.assertEqual(widget.currentItem().text(), "Edited item")
+        self.assertEqual("Edited item", widget.currentItem().text())
     
     def test_get_texts(self):
         widget = MText_list_Widget()
         widget.addItem("Item 1")
         widget.addItem("Item 2")
         texts = widget.get_texts()
-        self.assertEqual(2, len(texts))  # Assert that the length of texts is equal to 2
-        self.assertEqual("Item 1", texts[0])  # Assert that the first item in texts is "Item 1"
-        self.assertEqual("Item 2", texts[1])  # Assert that the second item in texts is "Item 2"
+        self.assertEqual(2, len(texts))
+        self.assertEqual("Item 1", texts[0])
+        self.assertEqual("Item 2", texts[1])
 
 
 if __name__ == "__main__":
