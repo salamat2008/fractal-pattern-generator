@@ -61,3 +61,6 @@ class Modified_list_widget(QListWidget):
     
     def getitems(self) -> tuple[QListWidgetItem, ...]:
         return tuple(self.item(index) for index in range(self.count()))
+    
+    def __repr__(self):
+        return f'{self.__class__.__name__}{tuple(item.text() for item in self.getitems())}'
