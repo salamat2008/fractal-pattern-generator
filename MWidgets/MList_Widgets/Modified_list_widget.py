@@ -59,5 +59,5 @@ class Modified_list_widget(QListWidget):
             self.clear,
         )
     
-    def getitems(self) -> list[QListWidgetItem]:
-        return [self.item(index) for index in range(self.count())]
+    def getitems(self) -> tuple[QListWidgetItem, ...]:
+        return tuple(self.item(index) for index in range(self.count()))

@@ -1,18 +1,26 @@
 import unittest
 from unittest import mock
 
-from PySide6.QtWidgets import QInputDialog, QListWidgetItem
+from PySide6.QtWidgets import QApplication, QInputDialog, QListWidgetItem
 
 from MWidgets.MList_Widgets.MText_list_Widget import MText_list_Widget
 
 
 class MText_list_WidgetTests(unittest.TestCase):
-    def test_addItem_with_no_arguments(self):
+    def setUp(self):
+        try:
+            QApplication()
+        except RuntimeError:
+            pass
+    
+    @mock.patch.object(QInputDialog, "getText")
+    def test_addItem_with_no_arguments(self, mock_gettext: mock.MagicMock):
+        mock_gettext.return_value = ('Some item', True)
         widget = MText_list_Widget()
         widget.addItem()
         self.assertEqual(1, widget.count())
         item_text = widget.item(0).text()
-        self.assertEqual("", item_text)
+        self.assertEqual("Some item", item_text)
     
     def test_addItem_with_string_argument(self):
         widget = MText_list_Widget()

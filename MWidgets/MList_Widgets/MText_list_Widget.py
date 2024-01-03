@@ -52,6 +52,6 @@ class MText_list_Widget(Modified_list_widget):
             if accepted:
                 item.setText(item_text)
     
-    def get_texts(self) -> tuple[str]:
+    def get_texts(self) -> tuple[str, ...]:
         # noinspection PyTypeChecker
         return tuple(item.text() for item in self.getitems())

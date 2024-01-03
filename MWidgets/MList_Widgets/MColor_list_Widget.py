@@ -86,14 +86,13 @@ class MColor_list_widgetWidget(Modified_list_widget):
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             painter.setPen(QPen(QColor("black"), 2))
             painter.setBrush(color)
-            painter.drawEllipse(1, 1, icon.height() - 2, icon.width() - 2)
+            painter.drawEllipse(0, 0, icon.height() - 2, icon.width() - 2)
         return QIcon(icon)
     
-    def get_colors(self) -> tuple[QColor]:
-        # noinspection PyTypeChecker
+    def get_colors(self) -> tuple[QColor, ...]:
         return tuple(item.data(self.ColorRole) for item in self.getitems())
     
-    def getitems(self) -> list[QListWidgetItem]:
+    def getitems(self) -> tuple[QListWidgetItem, ...]:
         """
         The color is stored in the MColor_list_widgetWidget.ColorRole
         following Qt.ItemDataRole.UserRole as a QColor object
