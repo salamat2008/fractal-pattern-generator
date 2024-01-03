@@ -6,11 +6,6 @@ from PySide6.QtWidgets import QInputDialog, QListWidgetItem
 from MWidgets.MList_Widgets.MText_list_Widget import MText_list_Widget
 
 
-class InputDialog(QInputDialog):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
 class MText_list_WidgetTests(unittest.TestCase):
     def test_addItem_with_no_arguments(self):
         widget = MText_list_Widget()
@@ -59,33 +54,33 @@ class MText_list_WidgetTests(unittest.TestCase):
             # noinspection PyTypeChecker
             widget.add_text(123)
     
+    @mock.patch.object(QInputDialog, "getText", return_value = ("Item 2", True))
     def test_edit_current_item_with_valid_text(self):
         widget = MText_list_Widget()
         item = QListWidgetItem("Item 1")
         widget.addItem(item)
         widget.setCurrentItem(item)
-        with mock.patch.object(QInputDialog, "getText", return_value = ("Item 2", True)):
-            widget.edit_current_item()
-            self.assertEqual(1, widget.count())  # Assert that the count is equal to 1
-            item_text = widget.item(0).text()
-            self.assertEqual("Item 2", item_text)  # Assert that the item text is "Item 2"
+        widget.edit_current_item()
+        self.assertEqual(1, widget.count())  # Assert that the count is equal to 1
+        item_text = widget.item(0).text()
+        self.assertEqual("Item 2", item_text)  # Assert that the item text is "Item 2"
     
-    def test_edit_current_item_with_empty_text(self):
+    @mock.patch.object(QInputDialog, "getText", return_value = ("Item 1", True))
+    def test_edit_current_item_with_empty_text(self, mock_gettext):
         widget = MText_list_Widget()
         item = QListWidgetItem("Item 1")
         widget.addItem(item)
         widget.setCurrentItem(item)
-        with mock.patch.object(QInputDialog, "getText", return_value = ("Item 1", True)):
-            widget.edit_current_item()
-            self.assertEqual(1, widget.count())  # Assert that the count is equal to 1
-            item_text = widget.item(0).text()
-            self.assertEqual("Item 1", item_text)  # Assert that the item text is "Item 1"
+        widget.edit_current_item()
+        self.assertEqual(1, widget.count())  # Assert that the count is equal to 1
+        item_text = widget.item(0).text()
+        self.assertEqual("Item 1", item_text)  # Assert that the item text is "Item 1"
     
+    @mock.patch.object(QInputDialog, "getText", new_callable = print)
     @staticmethod
     def test_edit_current_item_with_no_current_item():
         widget = MText_list_Widget()
-        with mock.patch.object(QInputDialog, "getText"):
-            widget.edit_current_item()
+        widget.edit_current_item()
     
     def test_get_texts(self):
         widget = MText_list_Widget()
