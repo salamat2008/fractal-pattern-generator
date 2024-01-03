@@ -1,6 +1,3 @@
-"""
-
-"""
 import unittest
 
 from Lsystems.Lsystem import LSystem
