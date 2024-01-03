@@ -1,5 +1,3 @@
-from typing import Optional
-
 from PySide6.QtCore import QPoint, Qt
 from PySide6.QtWidgets import (
     QListWidget,
@@ -10,28 +8,21 @@ from PySide6.QtWidgets import (
 
 
 class Modified_list_widget(QListWidget):
-    """
-    QListWidget(self, parent: Optional[PySide6.QtWidgets.QWidget] = None)
-    :return: None
-    """
-    
-    buttons = ("Добавить", "Изменить", "Вверх", "Вниз", "Удалить", "Очистить")
-    
-    def __init__(self, parent: Optional[QWidget] = None):
+    def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
         self.setDragDropMode(self.DragDropMode.InternalMove)
-        self.menu = QMenu(self)
-        self.menu.addAction("Добавить", self.addItem)
-        self.menu.addAction("Изменить", self.edit_current_item)
-        self.menu.addAction("Вверх", self.raise_item)
-        self.menu.addAction("Вниз", self.omit_item)
-        self.menu.addAction("Удалить", self.take_current_item)
-        self.menu.addAction("Очистить", self.clear)
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_menu)
     
     def show_menu(self, position: QPoint):
-        self.menu.exec(self.mapToGlobal(position))
+        menu = QMenu(self)
+        menu.addAction("Добавить", self.addItem)
+        menu.addAction("Изменить", self.edit_current_item)
+        menu.addAction("Вверх", self.raise_item)
+        menu.addAction("Вниз", self.omit_item)
+        menu.addAction("Удалить", self.take_current_item)
+        menu.addAction("Очистить", self.clear)
+        menu.exec(self.mapToGlobal(position))
     
     def addItem(self, item: QListWidgetItem | str):
         super().addItem(item)

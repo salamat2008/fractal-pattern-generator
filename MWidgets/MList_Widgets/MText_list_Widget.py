@@ -7,37 +7,32 @@ class MText_list_Widget(Modified_list_widget):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
     
-    def addItem(self, *args: QListWidgetItem | str):
+    def addItem(self, item: QListWidgetItem | str | None = None, ):
         """
-        If no arguments are passed, the self.add_text method is called
-        :param args:
+        :param item: QListWidgetItem | str | None = None
+        
         :return: None
         """
-        if not args:
+        if item is None:
             self.add_text()
         else:
-            super().addItem(*args)
+            super().addItem(item)
     
-    def add_text(self, text: str = None):
+    def add_text(self, text: str | None = None, user_input_text: str = ''):
         """
-        If the text parameter is None then QInputDialog is called,
-        If the claim button is not pressed or the length of the entered text is zero
-        Nothing is added
-        otherwise, if the text is a string
-        then it is added by the self.additem method
-        and becomes current
-        otherwise
-        TypeError rises
-        :raises TypeError:
+        :param user_input_text:
         :param text:
         :return: None
+        :raises TypeError:
         """
+        if not isinstance(user_input_text, str):
+            raise TypeError("The text must be a string")
         if isinstance(text, str):
             accepted = True
         elif text is None:
-            text, accepted = QInputDialog.getText(self.parent(), "Добавление", "")
+            text, accepted = QInputDialog.getText(self.parent(), "Добавление", "", text = user_input_text)
         else:
-            raise TypeError("The argument must be a string")
+            raise TypeError("The text must be a string")
         if accepted:
             self.addItem(text)
     
