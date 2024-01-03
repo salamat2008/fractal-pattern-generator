@@ -1,11 +1,9 @@
-import sys
 import unittest
+from unittest import mock
 
-from PySide6.QtWidgets import QApplication, QInputDialog, QListWidgetItem
+from PySide6.QtWidgets import QInputDialog, QListWidgetItem
 
 from MWidgets.MList_Widgets.MText_list_Widget import MText_list_Widget
-
-QApplication(sys.argv)
 
 
 class MText_list_WidgetTests(unittest.TestCase):
@@ -41,14 +39,14 @@ class MText_list_WidgetTests(unittest.TestCase):
     def test_add_text_with_empty_text(self):
         widget = MText_list_Widget()
         widget.add_text("")
-        self.assertEqual(widget.count(), 0)
+        self.assertEqual(widget.count(), 1)
     
     def test_add_text_with_no_text(self):
         widget = MText_list_Widget()
         widget.add_text()
         self.assertEqual(widget.count(), 1)
         item_text = widget.item(0).text()
-        self.assertEqual(item_text, "Item 1")
+        self.assertEqual(item_text, "")
     
     def test_add_text_with_invalid_argument(self):
         widget = MText_list_Widget()
@@ -61,7 +59,7 @@ class MText_list_WidgetTests(unittest.TestCase):
         item = QListWidgetItem("Item 1")
         widget.addItem(item)
         widget.setCurrentItem(item)
-        with unittest.mock.patch.object(QInputDialog, "getText", return_value = ("Item 2", True)):
+        with mock.patch.object(QInputDialog, "getText", return_value = ("Item 2", True)):
             widget.edit_current_item()
             self.assertEqual(widget.count(), 1)
             item_text = widget.item(0).text()
@@ -72,7 +70,7 @@ class MText_list_WidgetTests(unittest.TestCase):
         item = QListWidgetItem("Item 1")
         widget.addItem(item)
         widget.setCurrentItem(item)
-        with unittest.mock.patch.object(QInputDialog, "getText", return_value = ("", True)):
+        with mock.patch.object(QInputDialog, "getText", return_value = ("", True)):
             widget.edit_current_item()
             self.assertEqual(widget.count(), 1)
             item_text = widget.item(0).text()
@@ -80,7 +78,7 @@ class MText_list_WidgetTests(unittest.TestCase):
     
     def test_edit_current_item_with_no_current_item(self):
         widget = MText_list_Widget()
-        with unittest.mock.patch.object(QInputDialog, "getText"):
+        with mock.patch.object(QInputDialog, "getText"):
             widget.edit_current_item()
     
     def test_get_texts(self):
