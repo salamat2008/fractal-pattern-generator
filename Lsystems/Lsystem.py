@@ -132,21 +132,22 @@ class LSystem:
                     insert_in_to_tables("axioms", "axiom", string))
             cursor.execute(
                     """
-                                SELECT conclusion_id,
-                                conclusions.rule_id,
-                                conclusions.Keywords_array_id,
-                                conclusions.axiom_id,
-                                n_iter
-                                FROM conclusions
-                                JOIN rules, keywords, axioms
-                                ON conclusions.rule_id = rules.rule_id AND
-                                conclusions.Keywords_array_id = keywords.Keywords_array_id AND
-                                conclusions.axiom_id = axioms.axiom_id
-                                WHERE rule = ? AND
-                                Keywords_array = ? AND
-                                axiom = ? AND
-                                n_iter = ?
-                                """, (rules, Keywords, string, number_of_iterations)
+                    SELECT conclusion_id,
+                    conclusions.rule_id,
+                    conclusions.Keywords_array_id,
+                    conclusions.axiom_id,
+                    n_iter
+                    FROM conclusions
+                    JOIN rules, keywords, axioms
+                    ON conclusions.rule_id = rules.rule_id AND
+                    conclusions.Keywords_array_id = keywords.Keywords_array_id AND
+                    conclusions.axiom_id = axioms.axiom_id
+                    WHERE rule = ? AND
+                    Keywords_array = ? AND
+                    axiom = ? AND
+                    n_iter = ?
+                    """,
+                    (rules, Keywords, string, number_of_iterations)
             )
             result = cursor.fetchone()
             if not result:
