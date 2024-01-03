@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QInputDialog, QListWidgetItem, QWidget
 from .Modified_list_widget import Modified_list_widget
 
 
-class MText_list_widgetWidget(Modified_list_widget):
+class MText_list_Widget(Modified_list_widget):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
     
@@ -38,7 +38,7 @@ class MText_list_widgetWidget(Modified_list_widget):
             text, accepted = QInputDialog.getText(self.parent(), "Добавление", "")
         else:
             raise TypeError("The argument must be a string")
-        if text and accepted:
+        if accepted:
             self.addItem(text)
     
     def edit_current_item(self):
@@ -54,7 +54,7 @@ class MText_list_widgetWidget(Modified_list_widget):
             item_text, accepted = QInputDialog.getText(
                     self.parent(), "Изменение", "", text = item.text()
             )
-            if item_text and accepted:
+            if accepted:
                 item.setText(item_text)
     
     def get_texts(self) -> tuple[str]:
