@@ -69,7 +69,7 @@ class LSystem:
             if isinstance(keyword, str):
                 temp1.append([keyword])
             elif isinstance(keyword, Iterable):
-                temp1.append(sorted(keyword))
+                temp1.append(sorted(keyword, key = len))
             else:
                 raise TypeError(
                         "The argument must be a Iterable[Iterable[str]] or Iterable[str]"
