@@ -20,14 +20,14 @@ class MText_list_WidgetTests(unittest.TestCase):
         widget.addItem()
         self.assertEqual(1, widget.count())
         item_text = widget.item(0).text()
-        self.assertEqual("Some item", item_text)
+        self.assertEqual(item_text, "Some item")
     
     def test_addItem_with_string_argument(self):
         widget = MText_list_Widget()
         widget.addItem("Item 1")
-        self.assertEqual(1, widget.count())
+        self.assertEqual(widget.count(), 1)
         item_text = widget.item(0).text()
-        self.assertEqual("Item 1", item_text)
+        self.assertEqual(item_text, "Item 1")
     
     def test_addItem_with_listwidgetitem_argument(self):
         widget = MText_list_Widget()
@@ -35,19 +35,19 @@ class MText_list_WidgetTests(unittest.TestCase):
         widget.addItem(item)
         self.assertEqual(1, widget.count())
         item_text = widget.item(0).text()
-        self.assertEqual("Item 1", item_text)
+        self.assertEqual(item_text, "Item 1")
     
     def test_add_text_with_valid_text(self):
         widget = MText_list_Widget()
         widget.add_text("Item 1")
         self.assertEqual(1, widget.count())
         item_text = widget.item(0).text()
-        self.assertEqual("Item 1", item_text)
+        self.assertEqual(item_text, "Item 1")
     
     def test_add_text_with_empty_text(self):
         widget = MText_list_Widget()
         widget.add_text("")
-        self.assertEqual(1, widget.count())  # Assert that the count is equal to 1
+        self.assertEqual(widget.count(), 1)
     
     @mock.patch.object(QInputDialog, "getText")
     def test_add_text_with_no_text(self, mock_gettext: mock.MagicMock):
@@ -56,7 +56,7 @@ class MText_list_WidgetTests(unittest.TestCase):
         widget.add_text()
         self.assertEqual(1, widget.count())
         item_text = widget.item(0).text()
-        self.assertEqual("Some item", item_text)
+        self.assertEqual(item_text, "Some item")
     
     def test_add_text_with_invalid_argument(self):
         widget = MText_list_Widget()
@@ -70,7 +70,7 @@ class MText_list_WidgetTests(unittest.TestCase):
         widget = MText_list_Widget()
         widget.addItem("Item 1")
         widget.edit_current_item()
-        self.assertEqual("Edited item", widget.currentItem().text())
+        self.assertEqual(widget.currentItem().text(), "Edited item")
     
     def test_get_texts(self):
         widget = MText_list_Widget()
