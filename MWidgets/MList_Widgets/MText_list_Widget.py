@@ -9,16 +9,16 @@ class MText_list_widgetWidget(Modified_list_widget):
     
     def addItem(self, *args: QListWidgetItem | str):
         """
-        If no arguments are passed, the self.addtext method is called
+        If no arguments are passed, the self.add_text method is called
         :param args:
         :return: None
         """
         if len(args) == 0:
-            self.addtext()
+            self.add_text()
         else:
             super().addItem(*args)
     
-    def addtext(self, text: str = None):
+    def add_text(self, text: str = None):
         """
         If the text parameter is None then QInputDialog is called,
         If the claim button is not pressed or the length of the entered text is zero
@@ -27,8 +27,8 @@ class MText_list_widgetWidget(Modified_list_widget):
         then it is added by the self.additem method
         and becomes current
         otherwise
-        TypeEror rises
-        :raises TypeEror:
+        TypeError rises
+        :raises TypeError:
         :param text:
         :return: None
         """
@@ -51,11 +51,12 @@ class MText_list_widgetWidget(Modified_list_widget):
         """
         item = self.item(self.currentRow())
         if item is not None:
-            itemtext, accepted = QInputDialog.getText(
+            item_text, accepted = QInputDialog.getText(
                     self.parent(), "Изменение", "", text = item.text()
             )
-            if len(itemtext) > 0 and accepted:
-                item.setText(itemtext)
+            if len(item_text) > 0 and accepted:
+                item.setText(item_text)
     
-    def gettextlist(self):
-        return [item.text() for item in self.getitems()]
+    def get_texts(self) -> tuple[str]:
+        # noinspection PyTypeChecker
+        return tuple(item.text() for item in self.getitems())
