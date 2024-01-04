@@ -203,7 +203,6 @@ class Widget(QWidget):
     def wheelEvent(self, event):
         val = event.angleDelta().y() / 1200
         if self.line_lenght.value() > 0 or val > 0:
-            print(val)
             val += self.line_lenght.value()
             self.line_lenght.setValue(val)
             self.line_lenght.update()
