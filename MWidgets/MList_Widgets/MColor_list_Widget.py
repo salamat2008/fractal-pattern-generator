@@ -43,13 +43,13 @@ class MColor_list_widgetWidget(Modified_list_widget):
                 item.setText(f"#{hex(color.rgb()).upper()[4:]}")
                 item.setData(self.ColorRole, color)
     
-    def addItem(self, *args: QListWidgetItem | QColor | str):
-        if len(args) == 0:
+    def addItem(self, item: QListWidgetItem | QColor | str = None):
+        if item is None:
             self.add_color()
-        elif isinstance(*args, QColor):
+        elif isinstance(item, QColor):
             self.add_color()
         else:
-            super().addItem(*args)
+            super().addItem(item)
     
     def add_color(self, color: QColor = None):
         """
