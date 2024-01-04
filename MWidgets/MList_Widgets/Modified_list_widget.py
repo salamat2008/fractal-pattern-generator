@@ -1,4 +1,4 @@
-from PySide6.QtCore import QPoint, Qt, Slot
+from PySide6.QtCore import QPoint, Slot
 from PySide6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
@@ -10,9 +10,6 @@ from PySide6.QtWidgets import (
 class Modified_list_widget(QListWidget):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
-        self.setDragDropMode(self.DragDropMode.InternalMove)
-        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.show_menu)
     
     @Slot(QPoint)
     def show_menu(self, position: QPoint):
