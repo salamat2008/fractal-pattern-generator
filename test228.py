@@ -37,8 +37,8 @@ class Ui_MainWindow(object):
         self.listWidget.setDragDropMode(self.listWidget.DragDropMode.DragDrop)
         self.listWidget.setDefaultDropAction(Qt.MoveAction)
         self.listWidget.addItem(QColor(0, 0, 0))
-        self.listWidget.setEditTriggers(MColor_list_Widget)
-        
+        self.listWidget.setEditTriggers(self.listWidget.EditTrigger.DoubleClicked)
+        self.listWidget.setUniformItemSizes(True)
         self.horizontalLayout.addWidget(self.listWidget)
         
         MainWindow.setCentralWidget(self.centralwidget)
@@ -51,6 +51,7 @@ class Ui_MainWindow(object):
     # setupUi
     
     def retranslateUi(self, MainWindow):
+        self.listWidget.addItem(QColor(0, 0, 0))
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", "MainWindow", None))
     # retranslateUi
 

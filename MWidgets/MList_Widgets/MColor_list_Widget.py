@@ -47,7 +47,7 @@ class MColor_list_Widget(Modified_list_widget):
         if item is None:
             self.add_color()
         elif isinstance(item, QColor):
-            self.add_color()
+            self.add_color(item)
         else:
             super().addItem(item)
     
