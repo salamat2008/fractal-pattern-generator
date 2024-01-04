@@ -100,6 +100,25 @@ class LSystem:
         :return: List of tuples representing the action string.
         """
         
+        def generate(string_):
+            if not my_memory_endless:
+                for _key, _value in self.rules.items():
+                    factor = (_value.count(_key) / len(_key)) ** number_of_iterations
+                    if factor > 3_000_000:
+                        raise OverflowError("Memory limit exceeded.")
+            for _ in range(number_of_iterations):
+                for _key, _value in self.rules.items():
+                    string_ = string_.replace(_key, _value)
+            action_string_ = tuple(self.formatting(string_))
+            cursor.execute(
+                    """
+                    INSERT INTO conclusions (rule_id, Keywords_array_id, axiom_id, n_iter, conclusion)
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (*temp, number_of_iterations, pickle.dumps(action_string_))
+            )
+            return action_string_
+        
         def insert_into_tables(table: str, column: str, value: str) -> int:
             cursor.execute(f"SELECT {column}_id FROM {table} WHERE {column} = ?", (value,))
             if not cursor.fetchone():
@@ -171,22 +190,7 @@ class LSystem:
             result = cursor.fetchone()
             
             if not result:
-                if not my_memory_endless:
-                    for _key, _value in self.rules.items():
-                        factor = (_value.count(_key) / len(_key)) ** number_of_iterations
-                        if factor > 3_000_000:
-                            raise OverflowError("Memory limit exceeded.")
-                for _ in range(number_of_iterations):
-                    for _key, _value in self.rules.items():
-                        string = string.replace(_key, _value)
-                action_string = tuple(self.formatting(string))
-                cursor.execute(
-                        """
-                        INSERT INTO conclusions (rule_id, Keywords_array_id, axiom_id, n_iter, conclusion)
-                        VALUES (?, ?, ?, ?, ?)
-                        """,
-                        (*temp, number_of_iterations, pickle.dumps(action_string))
-                )
+                action_string = generate(string)
             else:
                 cursor.execute('SELECT conclusion FROM conclusions WHERE conclusion_id = ?', [result[0]])
                 action_string = pickle.loads(cursor.fetchone()[0])

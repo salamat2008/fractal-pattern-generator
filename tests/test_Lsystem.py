@@ -51,8 +51,8 @@ class TestLSystem(unittest.TestCase):
         # Negative test case: generating action string with invalid number of iterations
         self.lsystem = LSystem({"F": "FLFRRFLF"}, (("F", "forward"), ("B", "back")))
         with self.assertRaises(OverflowError):
-            self.lsystem.generate_action_string('F', 1000000)
-    
+            self.lsystem.generate_action_string('F', 100)
+        
     def test_formatting(self):
         self.lsystem.keywords = ["F", "B", "L", "R"]
         
