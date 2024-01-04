@@ -22,7 +22,7 @@ class MColor_list_widgetWidget(Modified_list_widget):
     
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
-        self.icon = QPixmap(30, 30)
+        self.icon = QPixmap(50, 50)
         self.icon.fill(QColor(0, 0, 0, 0))
     
     def edit_current_item(self):
@@ -86,7 +86,7 @@ class MColor_list_widgetWidget(Modified_list_widget):
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             painter.setPen(QPen(QColor("black"), 2))
             painter.setBrush(color)
-            painter.drawEllipse(0, 0, icon.height() - 2, icon.width() - 2)
+            painter.drawEllipse(1, 1, icon.height() - 2, icon.width() - 2)
         return QIcon(icon)
     
     def get_colors(self) -> tuple[QColor, ...]:
