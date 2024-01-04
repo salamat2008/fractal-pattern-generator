@@ -3,7 +3,7 @@ import unittest
 from PySide6.QtGui import QColor, Qt
 from PySide6.QtWidgets import QApplication, QListWidgetItem
 
-from MWidgets.MList_Widgets.MColor_list_Widget import MColor_list_widgetWidget, MColorDialog
+from MWidgets.MList_Widgets.MColor_list_Widget import MColor_list_Widget, MColorDialog
 
 
 class TestMColorDialog(unittest.TestCase):
@@ -26,7 +26,7 @@ class TestMColor_list_widgetWidget(unittest.TestCase):
             QApplication()
         except RuntimeError:
             pass
-        self.widget = MColor_list_widgetWidget()
+        self.widget = MColor_list_Widget()
     
     def test_edit_current_item_positive(self):
         item = QListWidgetItem()

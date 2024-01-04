@@ -17,7 +17,7 @@ class MColorDialog(QColorDialog):
         return self.selectedColor(), result
 
 
-class MColor_list_widgetWidget(Modified_list_widget):
+class MColor_list_Widget(Modified_list_widget):
     ColorRole = Qt.ItemDataRole.UserRole + 1
     
     def __init__(self, parent: QWidget | None = None):
@@ -94,7 +94,7 @@ class MColor_list_widgetWidget(Modified_list_widget):
     
     def getitems(self) -> tuple[QListWidgetItem, ...]:
         """
-        The color is stored in the MColor_list_widgetWidget.ColorRole
+        The color is stored in the MColor_list_Widget.ColorRole
         following Qt.ItemDataRole.UserRole as a QColor object
         :return: list[QListWidgetItem]
         """
