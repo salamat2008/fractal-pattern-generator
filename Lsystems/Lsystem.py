@@ -90,7 +90,7 @@ class LSystem:
     
     def generate_action_string(
             self, string: str, number_of_iterations: int, my_memory_endless: bool = False
-    ) -> list[tuple[str, int]]:
+    ) -> tuple[tuple[str, int]]:
         """
         Generate the action string based on the LSystem.
 

@@ -165,6 +165,7 @@ class Widget(QWidget):
         if self.n_iter != self.sval:
             self.sval = self.n_iter
             # noinspection SpellCheckingInspection
+            print(self.lsys.generate_action_string("FLLFLLF", self.n_iter))
             self.tut.draw_fracture(self.lsys.generate_action_string("FLLFLLF", self.n_iter))
         if self.line_lenght_value != self.line_lenght.value() or self.n_iter != self.sval:
             self.line_lenght_value = self.line_lenght.value()
