@@ -11,7 +11,7 @@ class Modified_list_widget(QListWidget):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
     
-    @Slot(QPoint)
+    @Slot(QPoint, name = 'show_menu')
     def show_menu(self, position: QPoint):
         menu = QMenu(self)
         menu.addAction("Добавить", self.addItem)
