@@ -6,8 +6,8 @@ from typing import Generator, Iterable
 
 
 class LSystem:
-    _rules: dict[str, str] = {}
-    _keywords: list[list[str]] = ()
+    __rules: dict[str, str] = {}
+    __keywords: list[list[str]] = ()
     
     def __init__(
             self,
@@ -35,7 +35,7 @@ class LSystem:
 
         :return: Dictionary of rules.
         """
-        return self._rules
+        return self.__rules
     
     @rules.setter
     def rules(self, rules: Iterable[str] | dict[str, str] | str) -> None:
@@ -45,18 +45,18 @@ class LSystem:
         :param rules: Rules of the LSystem. Can be an iterable of strings, a dictionary of strings, or a single string.
         """
         if isinstance(rules, dict):
-            self._rules = rules.copy()
+            self.__rules = rules.copy()
         elif isinstance(rules, str):
-            self._rules.clear()
+            self.__rules.clear()
             rules_list = self.multiplication(rules).split(maxsplit = 1)
             if len(rules_list) == 2:
-                self._rules[rules_list[0]] = rules_list[1]
+                self.__rules[rules_list[0]] = rules_list[1]
         elif isinstance(rules, Iterable):
-            self._rules.clear()
+            self.__rules.clear()
             for rule in rules:
                 rule_list = self.multiplication(rule).split(maxsplit = 1)
                 if len(rule_list) == 2:
-                    self._rules[rule_list[0]] = rule_list[1]
+                    self.__rules[rule_list[0]] = rule_list[1]
         else:
             raise TypeError("Invalid type for rules.")
     
@@ -67,7 +67,7 @@ class LSystem:
 
         :return: List of keywords.
         """
-        return self._keywords
+        return self.__keywords
     
     @keywords.setter
     def keywords(self, keywords: Iterable[str] | Iterable[Iterable[str]]) -> None:
@@ -86,7 +86,7 @@ class LSystem:
                 temp_keywords.append(sorted(keyword, key = len))
             else:
                 raise TypeError("Invalid type for keywords. Must be an iterable of strings or iterables of strings.")
-        self._keywords = temp_keywords
+        self.__keywords = temp_keywords
     
     def generate_action_string(
             self, string: str, number_of_iterations: int, my_memory_endless: bool = False
@@ -216,6 +216,8 @@ class LSystem:
         :param string: Input string.
         :return: Generator of tuples representing the formatted string.
         """
+        if not isinstance(string, str):
+            raise TypeError('argument "string" must be a string')
         for keywords in self.keywords:
             for keyword in keywords:
                 string = string.replace(keyword, keywords[0])
