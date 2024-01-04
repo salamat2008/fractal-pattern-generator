@@ -1,4 +1,4 @@
-from PySide6.QtCore import QPoint, Qt
+from PySide6.QtCore import QPoint, Qt, Slot
 from PySide6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
@@ -14,6 +14,7 @@ class Modified_list_widget(QListWidget):
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_menu)
     
+    @Slot(QPoint)
     def show_menu(self, position: QPoint):
         menu = QMenu(self)
         menu.addAction("Добавить", self.addItem)
