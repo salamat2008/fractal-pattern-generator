@@ -1,4 +1,5 @@
 from PySide6.QtCore import QPoint, Slot
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
@@ -14,6 +15,8 @@ class Modified_list_widget(QListWidget):
     @Slot(QPoint, name = 'show_menu')
     def show_menu(self, position: QPoint):
         menu = QMenu(self)
+        a = QAction()
+        a.connect()
         menu.addAction("Добавить", self.addItem)
         menu.addAction("Изменить", self.edit_current_item)
         menu.addAction("Вверх", self.raise_item)
@@ -23,8 +26,9 @@ class Modified_list_widget(QListWidget):
         menu.exec(self.mapToGlobal(position))
     
     def addItem(self, item: QListWidgetItem | str):
+        item = QListWidgetItem(item)
         super().addItem(item)
-        self.setCurrentRow(self.count() - 1)
+        self.setCurrentItem(item)
     
     def edit_current_item(self):
         print("Doesn't work, this is a function prototype")
