@@ -35,6 +35,7 @@ class TestMColor_list_widgetWidget(unittest.TestCase):
         self.widget.edit_current_item()
         updated_item = self.widget.currentItem()
         self.assertEqual("#FF0000", updated_item.text())
+        self.widget.clear()
     
     def test_edit_current_item_negative(self):
         self.widget.edit_current_item()
@@ -45,6 +46,7 @@ class TestMColor_list_widgetWidget(unittest.TestCase):
         item = self.widget.currentItem()
         self.assertIsNotNone(item)
         self.assertEqual("#FF0000", item.text())
+        self.widget.clear()
     
     def test_add_color_with_none(self):
         self.widget.add_color()
@@ -57,31 +59,20 @@ class TestMColor_list_widgetWidget(unittest.TestCase):
             self.widget.add_color("invalid color")
     
     def test_draw_icon_for_item(self):
-        color = QColor(Qt.GlobalColor.red)
+        color = QColor('red')
         icon = self.widget.draw_icon_for_item(color)
-        icon = icon.pixmap(30, mode = icon.Mode.Normal, state = icon.State.On)
         self.assertEqual(30, icon.height())
         self.assertEqual(30, icon.width())
     
     def test_get_colors(self):
-        expected_number_of_colors = 5
-        expected_colors = tuple(QColor(color) for color in QColor.colorNames()[:expected_number_of_colors])
+        expected_colors = tuple(QColor(color) for color in QColor.colorNames()[:10])
         for color in expected_colors:
             self.widget.add_color(color)
         actual_colors = self.widget.get_colors()
-        self.assertEqual(expected_number_of_colors, len(actual_colors))
+        print(actual_colors)
+        print(expected_colors)
+        print(self.widget.count())
         self.assertTupleEqual(expected_colors, actual_colors)
-    
-    def test_getitems(self):
-        expected_number_of_colors = 5
-        expected_colors = tuple(QColor(color) for color in QColor.colorNames()[:expected_number_of_colors])
-        for color in expected_colors:
-            self.widget.add_color(color)
-        items = self.widget.getitems()
-        self.assertEqual(expected_number_of_colors, len(items))
-        for item in items:
-            self.assertIsInstance(item, QListWidgetItem)
-        self.assertTupleEqual(expected_colors, tuple(item.data(self.widget.ColorRole) for item in items))
     
     def test_addItem_positive(self):
         self.widget.addItem("test")

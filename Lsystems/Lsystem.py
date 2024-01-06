@@ -1,3 +1,6 @@
+"""
+
+"""
 import pickle
 from json import dumps
 from re import escape, finditer, sub
@@ -5,28 +8,34 @@ from sqlite3 import connect as sql_connect
 from typing import Generator, Iterable
 
 
-class LSystem:
+class LSystem(object):
+    """
+    
+    """
     __rules: dict[str, str] = {}
     __keywords: list[list[str]] = ()
     
-    def __init__(
-            self,
-            rule: Iterable[str] | dict[str, str] | str | "LSystem" = None,
-            keywords: Iterable[str] | Iterable[Iterable[str]] = None,
-    ) -> None:
+    def __init__(self, arg1 = None, arg2 = None, **kwargs):
         """
-        Initialize the LSystem object.
-
-        :param rule: Rules of the LSystem. Can be an iterable of strings, a dictionary of strings,
-                     a single string, or another LSystem object.
-        :param keywords: Keywords of the LSystem. Can be an iterable of strings or an iterable of iterables of strings.
+        
+        :param arg1:
+        :param arg2:
+        :param kwargs:
         """
-        if isinstance(rule, LSystem):
-            self.keywords = rule.keywords.copy()
-            self.rules = rule.rules.copy()
-        elif rule is not None and keywords is not None:
+        rules = kwargs.get('rules')
+        keywords = kwargs.get('keywords')
+        lsystem = kwargs.get('other')
+        if isinstance(arg1, LSystem):
+            lsystem = arg1
+        elif arg1 and arg2:
+            keywords = arg2
+            rules = arg1
+        if lsystem and isinstance(lsystem, LSystem):
+            self.keywords = lsystem.keywords
+            self.rules = lsystem.rules
+        elif rules and keywords:
             self.keywords = keywords
-            self.rules = rule
+            self.rules = rules
     
     @property
     def rules(self) -> dict[str, str]:
@@ -100,7 +109,11 @@ class LSystem:
         :return: List of tuples representing the action string.
         """
         
-        def generate(string_):
+        def generate(string_: str):
+            """
+            :param string_: some string
+            :return:
+            """
             if not my_memory_endless:
                 for _key, _value in self.rules.items():
                     factor = (_value.count(_key) / len(_key)) ** number_of_iterations
@@ -120,6 +133,12 @@ class LSystem:
             return action_string_
         
         def insert_into_tables(table: str, column: str, value: str) -> int:
+            """
+            :param table:
+            :param column:
+            :param value:
+            :return:
+            """
             cursor.execute(f"SELECT {column}_id FROM {table} WHERE {column} = ?", (value,))
             if not cursor.fetchone():
                 cursor.execute(f"INSERT INTO {table} ({column}) VALUES (?)", (value,))
@@ -260,7 +279,3 @@ class LSystem:
     
     def __repr__(self):
         return f"{self.__class__.__name__}{self.rules, self.keywords}"
-
-
-if __name__ == "__main__":
-    pass

@@ -1,4 +1,4 @@
-from PySide6.QtGui import QColor, QIcon, QPainter, QPen, QPixmap, QRgba64, Qt
+from PySide6.QtGui import QColor, QPainter, QPen, QPixmap, QRgba64, Qt
 from PySide6.QtWidgets import QColorDialog
 
 from .Modified_list_widget import Modified_list_widget, QListWidgetItem, QWidget
@@ -22,7 +22,7 @@ class MColor_list_Widget(Modified_list_widget):
     
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
-        self.icon = QPixmap(50, 50)
+        self.icon = QPixmap(30, 30)
         self.icon.fill(QColor(0, 0, 0, 0))
     
     def edit_current_item(self):
@@ -75,19 +75,18 @@ class MColor_list_Widget(Modified_list_widget):
             item = QListWidgetItem(
                     self.draw_icon_for_item(color),
                     f"#{hex(color.rgb()).upper()[4:]}",
-                    self,
             )
             item.setData(self.ColorRole, color)
             self.addItem(item)
     
-    def draw_icon_for_item(self, color: QColor) -> QIcon:
+    def draw_icon_for_item(self, color: QColor) -> QPixmap:
         icon = self.icon.copy()
         with QPainter(icon) as painter:
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             painter.setPen(QPen(QColor("black"), 2))
             painter.setBrush(color)
             painter.drawEllipse(1, 1, icon.height() - 2, icon.width() - 2)
-        return QIcon(icon)
+        return icon
     
     def get_colors(self) -> tuple[QColor, ...]:
         return tuple(item.data(self.ColorRole) for item in self.getitems())

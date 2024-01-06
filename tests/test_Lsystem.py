@@ -7,6 +7,7 @@ from Lsystems.Lsystem import LSystem
 class TestLSystem(unittest.TestCase):
     def setUp(self):
         self.lsystem = LSystem()
+    
     def test_rules_setter(self):
         # Positive test case: setting rules as a dictionary
         self.lsystem.rules = {"F": "FLFRRFLF"}
@@ -52,7 +53,7 @@ class TestLSystem(unittest.TestCase):
         self.lsystem = LSystem({"F": "FLFRRFLF"}, (("F", "forward"), ("B", "back")))
         with self.assertRaises(OverflowError):
             self.lsystem.generate_action_string('F', 100)
-        
+    
     def test_formatting(self):
         self.lsystem.keywords = ["F", "B", "L", "R"]
         
