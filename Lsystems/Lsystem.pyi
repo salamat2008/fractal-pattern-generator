@@ -5,7 +5,7 @@ from typing import Generator, Iterable, overload
 
 class LSystem(object):
     __rules: dict[str, str]
-    __keywords: list[list[str]]
+    __keywords: tuple[tuple[str, ...], ...]
     
     @overload
     def __init__(
@@ -25,7 +25,7 @@ class LSystem(object):
     def rules(self, rules: Iterable[str] | dict[str, str] | str) -> None: ...
     
     @property
-    def keywords(self) -> list[list[str]]: ...
+    def keywords(self) -> tuple[tuple[str, ...], ...]: ...
     
     @keywords.setter
     def keywords(self, keywords: Iterable[str] | Iterable[Iterable[str]]) -> None: ...

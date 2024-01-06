@@ -27,10 +27,10 @@ class TestLSystem(unittest.TestCase):
     
     def test_keywords_setter(self):
         self.lsystem.keywords = ["F", "B", "L", "R"]
-        self.assertEqual([["F"], ["B"], ["L"], ["R"]], self.lsystem.keywords)
+        self.assertEqual((('F',), ('B',), ('L',), ('R',)), self.lsystem.keywords)
         
         self.lsystem.keywords = (("F", "Forward"), ["B", "Back"], ("L", "Left"), ["R", "Right"])
-        self.assertEqual([["F", "Forward"], ["B", "Back"], ["L", "Left"], ["R", "Right"]], self.lsystem.keywords)
+        self.assertEqual((('F', 'Forward'), ('B', 'Back'), ('L', 'Left'), ('R', 'Right')), self.lsystem.keywords)
         
         with self.assertRaises(TypeError):
             self.lsystem.keywords = 123

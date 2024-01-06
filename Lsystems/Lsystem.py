@@ -13,7 +13,7 @@ class LSystem(object):
     
     """
     __rules: dict[str, str] = {}
-    __keywords: list[list[str]] = ()
+    __keywords: tuple[tuple[str, ...], ...] = ()
     
     def __init__(self, arg1 = None, arg2 = None, **kwargs):
         """
@@ -70,11 +70,11 @@ class LSystem(object):
             raise TypeError("Invalid type for rules.")
     
     @property
-    def keywords(self) -> list[list[str]]:
+    def keywords(self) -> tuple[tuple[str, ...], ...]:
         """
         Get the keywords of the LSystem.
 
-        :return: List of keywords.
+        :return: Tuple of keywords.
         """
         return self.__keywords
     
@@ -90,12 +90,13 @@ class LSystem(object):
         temp_keywords = []
         for keyword in keywords:
             if isinstance(keyword, str):
-                temp_keywords.append([keyword])
+                if keyword:
+                    temp_keywords.append((keyword,))
             elif isinstance(keyword, Iterable):
-                temp_keywords.append(sorted(keyword, key = len))
+                temp_keywords.append(tuple(sorted(keyword, key = len)))
             else:
                 raise TypeError("Invalid type for keywords. Must be an iterable of strings or iterables of strings.")
-        self.__keywords = temp_keywords
+        self.__keywords = tuple(temp_keywords)
     
     def generate_action_string(
             self, string: str, number_of_iterations: int, my_memory_endless: bool = False
